@@ -7,7 +7,7 @@ const Login = createStackNavigator();
 
 export default function LoginNavigator(props) {
   return (
-    <Login.Navigator>
+    <Login.Navigator screenOptions={{headerShown:false}}>
      <Login.Screen name='LoginScreen' component={LoginScreen} />
     </Login.Navigator>
   )

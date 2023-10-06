@@ -14,7 +14,9 @@ const Profile = createStackNavigator();
 export default function ProfileNavigator(props) {
   const authenticated = true;
   return (
-    <Profile.Navigator>
+    <Profile.Navigator screenOptions={{
+      headerShown:false
+    }}>
       {
         authenticated ? (
           <>
