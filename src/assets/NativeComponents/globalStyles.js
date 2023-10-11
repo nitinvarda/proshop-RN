@@ -1,9 +1,11 @@
 import {StyleSheet} from 'react-native';
+import Assets from '../Theme';
 
-const globalStyles = StyleSheet.create({
+const globalStyles = (value)=> StyleSheet.create({
     mainView:{
-        marginHorizontal:20,
-        
+        flex:1,
+        paddingHorizontal:20,
+        backgroundColor:Assets.Colors(value).secondary,
         // backgroundColor:'red'
     }
 })

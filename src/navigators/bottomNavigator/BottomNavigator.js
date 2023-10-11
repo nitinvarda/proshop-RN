@@ -14,8 +14,8 @@ const BottomTab = createBottomTabNavigator();
 export default function BottomNavigator(props) {
     const authenticated = true;
   return (
-    <BottomTab.Navigator tabBar={(props)=><TabBar {...props} />} initialRouteName='Home' screenOptions={{headerShown:false}}>
-      <BottomTab.Screen name="Home" component={HomeNavigator} />
+    <BottomTab.Navigator tabBar={(props)=><TabBar {...props} />} initialRouteName='HomeNav' screenOptions={{headerShown:false}}>
+      <BottomTab.Screen name="HomeNav" component={HomeNavigator} />
       <BottomTab.Screen name="Cart" component={CartScreen} />
       <BottomTab.Screen name='Profile' component={ProfileNavigator} />
       
