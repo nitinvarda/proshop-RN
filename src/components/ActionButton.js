@@ -4,7 +4,7 @@ import Assets from '../assets/Theme'
 import { useSelector } from 'react-redux'
 
 export default function ActionButton(props) {
-    const colorScheme = useSelector((state)=>state.AppContext.colorScheme)
+    const colorScheme = useSelector((state)=>state.theme.colorScheme)
   return (
     <TouchableOpacity onPress={props.onPress} activeOpacity={0.5} style={{
         position:'absolute',
@@ -15,7 +15,7 @@ export default function ActionButton(props) {
         padding:15,
         borderRadius:10
         }}>
-      <Text style={{textAlign:'center',color:Assets.Colors(colorScheme).primary,fontSize:20}}>Add to Bag</Text>
+      <Text style={{textAlign:'center',color:Assets.Colors(colorScheme).primary,fontSize:20}}>{props.buttonText}</Text>
     </TouchableOpacity>
   )
 }

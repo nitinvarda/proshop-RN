@@ -5,7 +5,7 @@ import { useSelector } from 'react-redux'
 import { useNavigation } from '@react-navigation/native'
 
 export default function SearchBar(props) {
-  const colorScheme = useSelector((state)=>state.AppContext.colorScheme)
+  const colorScheme = useSelector((state)=>state.theme.colorScheme)
   const navigation = useNavigation();
   return (
     <TouchableOpacity onPress={()=>navigation.navigate('Search')} style={{

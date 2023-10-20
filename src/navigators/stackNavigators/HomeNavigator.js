@@ -8,19 +8,31 @@ import ShippingScreen from '../../screens/Home/ShippingScreen';
 import PaymentScreen from '../../screens/Home/PaymentScreen';
 import PlaceOrderScreen from '../../screens/Home/PlaceOrderScreen';
 import SearchScreen from '../../screens/Home/SearchScreen';
+import LoginScreen from '../../screens/Login/LoginScreen';
 
 const Home = createStackNavigator();
 
 export default function HomeNavigator(props) {
+  const authenticated = false;
   return (
     <Home.Navigator initialRouteName='Home' screenOptions={{headerShown:false}}>
       <Home.Screen name="Home" component={HomeScreen} />
       <Home.Screen name="Product"component={ProductScreen}/>
       <Home.Screen name="Cart" component={CartScreen} />
-      <Home.Screen name="Shipping" component={ShippingScreen} />
-      <Home.Screen name="Payment" component={PaymentScreen} />
       <Home.Screen name="PlaceOrder" component={PlaceOrderScreen} />
       <Home.Screen name="Search" component={SearchScreen} />
+
+      {authenticated ? (
+        <>
+        <Home.Screen name="Shipping" component={ShippingScreen} />
+        <Home.Screen name="Payment" component={PaymentScreen} />
+        </>
+
+      ) : <Home.Screen name='Login' component={LoginScreen} />
+    
+      }
+
+
     </Home.Navigator>
   )
 }

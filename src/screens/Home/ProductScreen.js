@@ -1,5 +1,5 @@
-import { View, Text,Image,Dimensions, StatusBar, ActivityIndicator } from 'react-native'
-import React from 'react'
+import { View, Text,Image,Dimensions, StatusBar, ActivityIndicator,Button } from 'react-native'
+import React, { useEffect, useState } from 'react'
 import NavBar from '../../components/NavBar'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -7,10 +7,11 @@ import { ScrollView } from 'react-native-gesture-handler';
 import ActionButton from '../../components/ActionButton';
 import Assets from '../../assets/Theme';
 import {useParams} from 'react-router'
-import { useSelector } from 'react-redux';
-import {addItem,removeItem} from '../../redux/reducers/CartReducer';
+import { useDispatch, useSelector } from 'react-redux';
+import {addItem,loadInitialState} from '../../slices/cartSlice';
 import {useGetProductDetailQuery} from '../../slices/productsApiSlice';
 import { useRoute } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
@@ -18,15 +19,46 @@ const windowHeight = Dimensions.get('window').height;
 export default function ProductScreen(props) {
   const {params} = useRoute();
   console.log(params.id)
-  const colorScheme = useSelector((state)=>state.AppContext.colorScheme)
+  const colorScheme = useSelector((state)=>state.theme.colorScheme)
   const {data:item,isLoading,error} = useGetProductDetailQuery(params?.id);
-
-  // const item = props.route?.params?.item;
+  const dispatch = useDispatch();
+  const [qty,setQty] = useState(1);
   
+  // const item = props.route?.params?.item;
+
+  useEffect(()=>{
+    loadInitialState(item)
+  },[])
+
+  const addToCart = async()=>{
+    try {
+
+      const product = {
+        product: item._id,
+        name: item.name,
+        image: item.image,
+        price: item.price,
+        countInStock: item.countInStock,
+        qty
+      }
+      const cartItems = await AsyncStorage.getItem("cartItems");
+
+      if(cartItems){
+        const parsedCartItems = JSON.parse(cartItems);
+        await AsyncStorage.setItem("cartItems",JSON.stringify([...parsedCartItems,product]))
+      }
+      else{
+        await AsyncStorage.setItem("cartItems",JSON.stringify([product]))
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+ 
   
   return (
     <SafeAreaView edges={'top'} style={{flex:1}}>
-      {/* <StatusBar hidden={true} /> */}
       {isLoading ? (
         <View style={{flex:1,flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
           <ActivityIndicator  size={'large'} color={'#333333'}/>
@@ -69,7 +101,7 @@ export default function ProductScreen(props) {
             </View>
   
         </ScrollView>
-        <ActionButton onPress={()=>addItem(item)} />
+        <ActionButton onPress={()=>addToCart()} buttonText={"Add to Cart"} />
         </>
       )}
       

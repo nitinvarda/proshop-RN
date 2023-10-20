@@ -10,6 +10,7 @@ const CartReducer = createSlice({
     initialState,
     reducers:{
         addItem:(state,action)=>{
+            console.log(action)
             state.items.concat(action.payload.item);
         },
         removeItem:(state,action)=>{

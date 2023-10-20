@@ -8,19 +8,21 @@ import UsersScreen from '../../screens/Profile/UsersScreen';
 import ProductsScreen from '../../screens/Profile/ProductsScreen';
 import OrdersScreen from '../../screens/Profile/OrdersScreen';
 import LoginNavigator from './LoginNavigator';
+import { useSelector } from 'react-redux';
 
 const Profile = createStackNavigator();
 
 export default function ProfileNavigator(props) {
-  const authenticated = true;
+  const authenticated = useSelector(state=>state.auth.authenticated)
   return (
-    <Profile.Navigator screenOptions={{
-      headerShown:false
+    <Profile.Navigator initialRouteName='ProfileScreen'  screenOptions={{
+      headerShown:false,
+      
     }}>
+      <Profile.Screen name="ProfileScreen" component={ProfileScreen} />
       {
         authenticated ? (
           <>
-            <Profile.Screen name="ProfileScreen" component={ProfileScreen} />
             <Profile.Screen name="OrderScreen" component={OrderScreen} />
             <Profile.Screen name="OrderListScreen" component={OrderListScreen}/>
             <Profile.Screen name="UsersScreen" component={UsersScreen} />

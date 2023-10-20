@@ -6,9 +6,12 @@ import {View,Text} from 'react-native-ui-lib'
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import Assets from '../assets/Theme';
 import { useSelector } from 'react-redux';
+import PropTypes from 'prop-types';
+
+
 
 export default function NavBar(props) {
-    const colorScheme = useSelector((state)=>state.AppContext.colorScheme)
+    const colorScheme = useSelector((state)=>state.theme.colorScheme)
   return (
     <SafeAreaView style={{backgroundColor:Assets.Colors(colorScheme).secondary,paddingVertical:5}} >
         <StatusBar backgroundColor={Assets.Colors(colorScheme).secondary} barStyle={colorScheme =='dark' ? 'light-content' :'dark-content'} />
@@ -18,4 +21,9 @@ export default function NavBar(props) {
         </View>
     </SafeAreaView>
   )
+}
+
+NavBar.propTypes = {
+  screenName:PropTypes.string,
+  onPress:PropTypes.func
 }

@@ -20,6 +20,6 @@ const theme = createSlice({
 
 })
 
-export const {toggleDarkMode,toggleLightMode} = AppContext.actions;
+export const {toggleDarkMode,toggleLightMode} = theme.actions;
 
-export default AppContext.reducer;
+export default theme.reducer;
