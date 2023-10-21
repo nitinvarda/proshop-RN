@@ -15,7 +15,7 @@ export default function ProfileScreen({navigation}) {
   const [switchValue,setSwitchValue] = useState(colorScheme=='light' ? false : true)
   const authenticated = useSelector((state)=>state.auth.authenticated);
 
-  console.log({navigation})
+
 
   const dispatch = useDispatch();
 
@@ -30,7 +30,7 @@ export default function ProfileScreen({navigation}) {
 
 
   return (
-    <SafeAreaView style={{flex:1}}>
+    <SafeAreaView style={{flex:1,backgroundColor:Assets.Colors(colorScheme).primary}}>
       <NavBar onPress={()=>navigation.goBack()} screenName={'Profile'} />
       <View style={{marginHorizontal:20,flex:1}}>
         <View style={{flex:1}}>
@@ -52,7 +52,13 @@ export default function ProfileScreen({navigation}) {
             </View>
           )}
           <Text> {colorScheme=='light' ? 'dark' : 'light'} mode</Text>
-          <Switch value={colorScheme=='light' ? false : true} onColor={Assets.Colors(colorScheme).primary} onValueChange={()=> colorScheme=='light' ? dispatch(toggleDarkMode()) :dispatch(toggleLightMode())} />
+          <Switch 
+            value={colorScheme=='light' ? false : true} 
+            onColor={Assets.Colors(colorScheme).textPrimary} 
+            offColor={Assets.Colors(colorScheme).textPrimary}
+            onValueChange={()=> colorScheme=='light' ? dispatch(toggleDarkMode()) : dispatch(toggleLightMode())}
+            thumbColor={'red'} 
+            />
 
         </View>
         <View style={styles().version}> 

@@ -2,20 +2,18 @@ import { View, Text,TouchableOpacity } from 'react-native'
 import React from 'react'
 import Assets from '../assets/Theme'
 import { useSelector } from 'react-redux'
+import Button from './Button'
 
 export default function ActionButton(props) {
-    const colorScheme = useSelector((state)=>state.theme.colorScheme)
+    
   return (
-    <TouchableOpacity onPress={props.onPress} activeOpacity={0.5} style={{
-        position:'absolute',
+    <View style={{
+      position:'absolute',
         bottom:10,
         left:20,
         right:20,
-        backgroundColor:Assets.Colors(colorScheme).textPrimary,
-        padding:15,
-        borderRadius:10
-        }}>
-      <Text style={{textAlign:'center',color:Assets.Colors(colorScheme).primary,fontSize:20}}>{props.buttonText}</Text>
-    </TouchableOpacity>
+    }}>
+      <Button onPress={props.onPress} title={props.buttonText}  />
+    </View>
   )
 }

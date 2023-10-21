@@ -18,7 +18,6 @@ const windowHeight = Dimensions.get('window').height;
 
 export default function ProductScreen(props) {
   const {params} = useRoute();
-  console.log(params.id)
   const colorScheme = useSelector((state)=>state.theme.colorScheme)
   const {data:item,isLoading,error} = useGetProductDetailQuery(params?.id);
   const dispatch = useDispatch();

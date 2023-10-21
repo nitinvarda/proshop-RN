@@ -13,7 +13,7 @@ import PropTypes from 'prop-types';
 export default function NavBar(props) {
     const colorScheme = useSelector((state)=>state.theme.colorScheme)
   return (
-    <SafeAreaView style={{backgroundColor:Assets.Colors(colorScheme).secondary,paddingVertical:5}} >
+    <SafeAreaView style={{backgroundColor:Assets.Colors(colorScheme).secondary,paddingVertical:10}} >
         <StatusBar backgroundColor={Assets.Colors(colorScheme).secondary} barStyle={colorScheme =='dark' ? 'light-content' :'dark-content'} />
         <View centerV row style={{marginHorizontal:20,}}>
             <Ionicons name='arrow-back' color={Assets.Colors(colorScheme).textPrimary} size={28} onPress={props.onPress} />

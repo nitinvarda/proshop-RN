@@ -19,7 +19,8 @@ const windowHeight = Dimensions.get('window').height;
 export default function HomeScreen({navigation}) {
     const input = React.createRef();
     const colorScheme = useSelector((state)=>state.theme.colorScheme)
-    
+    const user = useSelector((state)=>state.auth.user);
+
 
     const {data:products,isLoading,error} = useGetProductsQuery();
     // const products = data?.products;
@@ -52,7 +53,7 @@ export default function HomeScreen({navigation}) {
 
 
     const renderItem = ({item})=>{
-        console.log({item})
+  
         return (
         <Card flex>
             {/* <Card.Section imageSource={{uri: item.imag}} imageStyle={styles.itemImage}/> */}
