@@ -1,6 +1,6 @@
-import { View, Text,StyleSheet, TouchableOpacity } from 'react-native'
+import { View, Text,StyleSheet, TouchableOpacity, StatusBar, Platform } from 'react-native'
 import React, { useEffect, useState } from 'react'
-import {Switch } from 'react-native-ui-lib'
+import {Switch} from 'react-native-ui-lib';
 import { useDispatch, useSelector } from 'react-redux'
 import {toggleDarkMode,toggleLightMode} from '../../slices/themeSlice'
 import NavBar from '../../components/NavBar'
@@ -28,9 +28,11 @@ export default function ProfileScreen({navigation}) {
     navigation.navigate("Login")
   }
 
-
   return (
-    <SafeAreaView style={{flex:1,backgroundColor:Assets.Colors(colorScheme).primary}}>
+    <View style={{flex:1,backgroundColor:Assets.Colors(colorScheme).primary}}>
+      <View style={{width:'100%',height:Platform.OS=="ios" ? 60 : 0,backgroundColor:Assets.Colors(colorScheme).secondary}}>
+
+      </View>
       <NavBar onPress={()=>navigation.goBack()} screenName={'Profile'} />
       <View style={{marginHorizontal:20,flex:1}}>
         <View style={{flex:1}}>
@@ -52,12 +54,14 @@ export default function ProfileScreen({navigation}) {
             </View>
           )}
           <Text> {colorScheme=='light' ? 'dark' : 'light'} mode</Text>
+         
           <Switch 
             value={colorScheme=='light' ? false : true} 
             onColor={Assets.Colors(colorScheme).textPrimary} 
             offColor={Assets.Colors(colorScheme).textPrimary}
             onValueChange={()=> colorScheme=='light' ? dispatch(toggleDarkMode()) : dispatch(toggleLightMode())}
-            thumbColor={'red'} 
+            thumbColor={colorScheme=='light' ? Assets.Colors(colorScheme).primary : Assets.Colors(colorScheme).textPrimary} 
+            
             />
 
         </View>
@@ -66,7 +70,7 @@ export default function ProfileScreen({navigation}) {
         </View>
 
       </View>
-    </SafeAreaView>
+    </View>
   )
 }
 

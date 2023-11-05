@@ -1,19 +1,25 @@
-import { View, Text,TouchableOpacity } from 'react-native'
+import { View, Text,TouchableOpacity, Platform } from 'react-native'
 import React from 'react'
 import Assets from '../assets/Theme'
 import { useSelector } from 'react-redux'
 import Button from './Button'
+import PropType from 'prop-types';
 
 export default function ActionButton(props) {
     
   return (
     <View style={{
       position:'absolute',
-        bottom:10,
+        bottom:Platform.OS =="ios" ?  50 : 20,
         left:20,
         right:20,
     }}>
       <Button onPress={props.onPress} title={props.buttonText}  />
     </View>
   )
+}
+
+ActionButton.prototype = {
+  onPress:PropType.func,
+  buttonText:PropType.string
 }

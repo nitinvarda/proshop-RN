@@ -23,6 +23,7 @@ export default function HomeScreen({navigation}) {
 
 
     const {data:products,isLoading,error} = useGetProductsQuery();
+
     // const products = data?.products;
 
     useEffect(()=>{

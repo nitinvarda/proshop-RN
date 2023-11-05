@@ -1,4 +1,4 @@
-export const BASE_URL = process.env.NODE_ENV === 'development' ? 'http://10.0.2.2:5001' : '';
+export const BASE_URL = process.env.NODE_ENV === 'development' ? 'http://10.1.10.53:5001' : '';
 
 export const PRODUCTS_URL = "/api/products";
 export const USERS_URL = "/api/users";

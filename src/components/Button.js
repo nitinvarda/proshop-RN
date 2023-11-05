@@ -8,8 +8,8 @@ export default function Button(props) {
     const colorScheme = useSelector((state)=>state.theme.colorScheme)
   
   return (
-    <TouchableOpacity activeOpacity={0.5} onPress={props.onPress} style={styles(colorScheme).btn}>
-      <Text style={styles(colorScheme).btnText}>{props.title}</Text>
+    <TouchableOpacity activeOpacity={0.5} onPress={props.onPress} style={[styles(colorScheme).btn,props.style]}>
+      <Text style={[styles(colorScheme).btnText]}>{props.title}</Text>
     </TouchableOpacity>
   )
 }
@@ -30,5 +30,6 @@ const styles = (value) => StyleSheet.create({
 
 Button.propTypes = {
     title:PropTypes.string,
-    onPress:PropTypes.func
+    onPress:PropTypes.func,
+    style:PropTypes.object
 }
