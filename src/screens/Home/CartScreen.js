@@ -2,24 +2,43 @@ import { ActivityIndicator, TouchableOpacity,StyleSheet, ScrollView, FlatList } 
 import {View,Text} from 'react-native-ui-lib'
 import React, { useEffect, useState } from 'react'
 import NavBar from '../../components/NavBar'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import CartProduct from '../../components/CartProduct'
 import Assets from '../../assets/Theme'
 import Button from '../../components/Button'
+import useCart from '../../hooks/useCart'
+import { loadInitialState } from '../../slices/cartSlice'
 
 export default function CartScreen({navigation}) {
-  const cartItems = useSelector((state)=>state.cart)
+  // const cartItems = useSelector((state)=>state.cart)
   const colorScheme = useSelector((state)=>state.theme.colorScheme)
-  const [items,SetItems] = useState([])
   const [loading,setLoading] = useState(false)
-  const [subTotal,setSubTotal] = useState(0)
+
+  // const {cartItems:items,loading,subTotal,decreaseCount,increaseCount,deleteItem} = useCart();
+  const {cartItems,itemsPrice,shippingPrice,taxPrice,totalPrice} = useSelector(state=>state.cart);
+
+  const dispatch = useDispatch();
+ 
 
   useEffect(()=>{
-    // deleteAllItems()
-    getCartItems();
-  
+    checkAsyncStorage();
   },[])
+
+  const checkAsyncStorage = async() =>{
+    try {
+      const cart = await AsyncStorage.getItem('cart');
+     
+      if(cart){
+        const cartItems = JSON.parse(cart);
+        console.log(cartItems)
+        dispatch(loadInitialState(cartItems))
+
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   const deleteAllItems = async()=>{
     try {
@@ -29,62 +48,18 @@ export default function CartScreen({navigation}) {
     }
   }
 
-  const getCartItems = async()=>{
-    try {
-      setLoading(true);
-      const items = await AsyncStorage.getItem("cartItems");
-      
-      if(items){
-        const cartItems = JSON.parse(items)
-        SetItems(cartItems);
-        getSubTotal(cartItems);
-      }
-      
-      setLoading(false)
-    } catch (error) {
-      console.log(error);
-      setLoading(false);
-    }
-  }
-
-  const getSubTotal = (cartItems) =>{
-    const sumCost = (total,item) =>{
-      return total + item.price
-    }
-    const subTotalValue = cartItems.reduce(sumCost,0)
-    setSubTotal(subTotalValue)
-
-  }
-
-  const deleteItem = async(id) =>{
-      try {
-        
-
-          if(items.length > 0){
-              const newItems = items.filter(product=>product.id!==id)
-              console.log(newItems)
-              SetItems(newItems)
-              getSubTotal(newItems)
-              await AsyncStorage.setItem('cartItems',JSON.stringify(newItems))
-          }
-      } catch (error) {
-          console.log(error);
-      }
-  }
+ 
 
   const getProductById = (id) =>{
-    return items.length > 0 ? items.filter(product=>product.id==id) : {}
+    return cartItems.length > 0 ? cartItems.filter(product=>product.id==id) : {}
   }
 
-  const decreaseCount = (id) =>{
-    const product = getProductById(id);
+  // const decreaseCount = (id) =>{
+  //   const product = getProductById(id);
     
     
-  }
-  const increaseCount = (id) =>{
-    const product = getProductById(id);
-    console.log(product)
-  }
+  // }
+  
 
   return (
     <View style={{flex:1}}>
@@ -94,32 +69,34 @@ export default function CartScreen({navigation}) {
           <View>
             <ActivityIndicator size={'large'}  />
           </View>
-        ) : items.length > 0 ?  (
+        ) : cartItems.length > 0 ?  (
           <View flex>
               <View style={{flex:1}}>
               <FlatList 
-                data={items}
+                data={cartItems}
                 
               
                 showsVerticalScrollIndicator={false}
                 contentContainerStyle={{flexGrow: 1,paddingHorizontal:20}}
-      ListFooterComponentStyle={{flex:1, justifyContent: 'flex-end'}}
+                ListFooterComponentStyle={{flex:1, justifyContent: 'flex-end'}}
                 ListFooterComponent={
                   <>
-                  <View style={{borderTopWidth:1,borderBottomWidth:1}}>
-                      <View>
-                        <View  row spread>
-                          <Text>Subtotal</Text>
-                          <Text>${subTotal}</Text>
+                  <View style={styles(colorScheme).total_section}>
+                      
+                        <View  row spread paddingT-5>
+                          <Text style={styles(colorScheme).total_value_heading} >Subtotal</Text>
+                          <Text style={styles(colorScheme).total_value}>${itemsPrice}</Text>
                         </View>
                         
-                        <View>
-                          <Text>Delivery fee</Text>
+                        <View row spread paddingT-5>
+                          <Text style={styles(colorScheme).total_value_heading}>tax</Text>
+                          <Text style={styles(colorScheme).total_value}>${taxPrice}</Text>
                         </View>
-                        <View>
-                          <Text>total</Text>
+                        <View row spread paddingT-5>
+                          <Text style={styles(colorScheme).total_value_heading}>total</Text>
+                          <Text style={styles(colorScheme).total_value} >${totalPrice}</Text>
                         </View>
-                      </View>
+                      
                     </View>
                     <Button title={"Proceed to checkout"} style={{marginVertical:20}}  />
                     </>
@@ -128,16 +105,21 @@ export default function CartScreen({navigation}) {
                 renderItem={({item,index})=>{
                   return(
                     <View paddingV-10>
-                      <CartProduct key={index} item={item} onIncreaseCount={()=>increaseCount(item.id)} onDecreaseCount={()=>decreaseCount(item.id)} onDelete={() => deleteItem(item.id)} />
+                      <CartProduct 
+                        key={index} 
+                        item={item} 
+                        onIncreaseCount={()=>increaseCount(item.id)} 
+                        onDecreaseCount={()=>decreaseCount(item.id)} 
+                        onDelete={() => deleteItem(item.id)} 
+                        onPress={()=>navigation.navigate("Product",{id:item.id})}
+                        />
                     </View>
                   )
                 }}
                 />
               </View>
               <View style={{marginHorizontal:20}}>
-            
-                    
-                  
+  
               </View>
           </View>
           
@@ -169,5 +151,20 @@ const styles = (value) => StyleSheet.create({
   empty_redirect:{
     color:Assets.Colors(value).textPrimary,
     
+  },
+  total_section:{
+    borderTopWidth:1,
+    borderBottomWidth:1,
+    borderColor:Assets.Colors(value).textPrimary,
+    paddingVertical:5
+  },
+  total_value:{
+    fontSize:16,
+    fontWeight:'bold',
+    color:Assets.Colors(value).textPrimary
+  },
+  total_value_heading:{
+    color:Assets.Colors(value).textPrimary,
+    fontWeight:'bold'
   }
 })

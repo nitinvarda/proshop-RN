@@ -5,12 +5,14 @@ import SearchBar from '../../components/SearchBar';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import globalStyles from '../../assets/NativeComponents/globalStyles';
 import ProductCard from '../../components/ProductCard';
-import { GridList, Spacings,View,Text,Card } from 'react-native-ui-lib';
+import { GridList, Spacings,View,Text,Card, Badge } from 'react-native-ui-lib';
 import FrontAwesome from 'react-native-vector-icons/FontAwesome';
 import Ionicons from 'react-native-vector-icons/Ionicons';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import Assets from '../../assets/Theme';
 import {useGetProductsQuery} from '../../slices/productsApiSlice';
+import useAuth from '../../hooks/useAuth';
+import { setCredentials } from '../../slices/authSlice';
  
 
 const windowWidth = Dimensions.get('window').width;
@@ -19,16 +21,30 @@ const windowHeight = Dimensions.get('window').height;
 export default function HomeScreen({navigation}) {
     const input = React.createRef();
     const colorScheme = useSelector((state)=>state.theme.colorScheme)
-    const user = useSelector((state)=>state.auth.user);
+    const authenticated = useSelector((state)=>state.auth.authenticated);
+    
 
 
     const {data:products,isLoading,error} = useGetProductsQuery();
+    const {userInfo,auth} = useAuth();
+
+    const cart = useSelector(state=>state.cart);
+ 
+    const dispatch = useDispatch();
+ 
 
     // const products = data?.products;
 
     useEffect(()=>{
+        if(auth){
+            dispatch(setCredentials({user:userInfo}))
 
-    },[])
+        }
+        
+        
+        
+
+    },[authenticated,userInfo])
 
 
     const renderProducts = ({ item, index }) => {
@@ -81,7 +97,23 @@ export default function HomeScreen({navigation}) {
                     <View flex  row spread style={{justifyContent:'space-around'}}> 
 
                         <FrontAwesome onPress={()=>navigation.navigate('Profile')} name="user" size={30} color={Assets.Colors(colorScheme).textPrimary} />
-                        <Ionicons onPress={()=>navigation.navigate('Cart')} name='cart' size={30} color={Assets.Colors(colorScheme).textPrimary} />
+                        <View>
+                            <Ionicons onPress={()=>navigation.navigate('Cart')} name='cart' size={30} color={Assets.Colors(colorScheme).textPrimary} />
+                            <View style={{
+                                    position:'absolute',
+                                    top:0,
+                                    right:0,
+                                    width:17,height:17,
+                                    borderRadius:50,
+                                    flexDirection:'row',
+                                    justifyContent:'center',
+                                    alignItems:'center',
+                                    backgroundColor:'red'
+                                }}>
+                                    <Text>{cart.cartItems.length}</Text>
+                                </View>
+
+                        </View>
                     </View>
                 </View>
         {isLoading ? (<ActivityIndicator size={'large'} color={'#333333'} />) : error? (

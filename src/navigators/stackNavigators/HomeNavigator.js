@@ -1,5 +1,5 @@
 import { View, Text } from 'react-native'
-import React from 'react'
+import React, { useEffect } from 'react'
 import {createStackNavigator} from '@react-navigation/stack';
 import HomeScreen from '../../screens/Home/HomeScreen';
 import ProductScreen from '../../screens/Home/ProductScreen';
@@ -9,11 +9,16 @@ import PaymentScreen from '../../screens/Home/PaymentScreen';
 import PlaceOrderScreen from '../../screens/Home/PlaceOrderScreen';
 import SearchScreen from '../../screens/Home/SearchScreen';
 import LoginScreen from '../../screens/Login/LoginScreen';
+import { useSelector } from 'react-redux';
 
 const Home = createStackNavigator();
 
 export default function HomeNavigator(props) {
-  const authenticated = false;
+  const authenticated = useSelector((state)=>state.auth.authenticated);
+  useEffect(()=>{
+
+  },[authenticated])
+  
   return (
     <Home.Navigator initialRouteName='Home' screenOptions={{headerShown:false}}>
       <Home.Screen name="Home" component={HomeScreen} />

@@ -15,18 +15,17 @@ const authSlice = createSlice({
     name:'auth',
     initialState,
     reducers:{
-        setCredentials:(state,action)=>{
-            state ={
-                authenticated:true,
-                user:action.payload.user,
-                token:action.payload.token
-            }
+        setCredentials:(state,action)=>{ 
+            state.user = action.payload.user;
+            state.authenticated = true;
+            
         },
         logout:(state,action)=>{
-            state.cartItems = action.cartItems;
+            state.user = {};
+            state.authenticated=false;
         }
     }
 })
 
-export const {authenticate,logout} = authSlice.actions;
+export const {setCredentials,logout} = authSlice.actions;
 export default authSlice.reducer;
