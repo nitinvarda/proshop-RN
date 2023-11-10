@@ -8,21 +8,22 @@ import CartProduct from '../../components/CartProduct'
 import Assets from '../../assets/Theme'
 import Button from '../../components/Button'
 import useCart from '../../hooks/useCart'
-import { loadInitialState } from '../../slices/cartSlice'
+import { addToCart, loadInitialState,removeFromCart } from '../../slices/cartSlice'
 
 export default function CartScreen({navigation}) {
-  // const cartItems = useSelector((state)=>state.cart)
+  
   const colorScheme = useSelector((state)=>state.theme.colorScheme)
   const [loading,setLoading] = useState(false)
 
-  // const {cartItems:items,loading,subTotal,decreaseCount,increaseCount,deleteItem} = useCart();
+  
   const {cartItems,itemsPrice,shippingPrice,taxPrice,totalPrice} = useSelector(state=>state.cart);
+  const {userInfo} = useSelector(state=>state.auth);
 
   const dispatch = useDispatch();
  
 
   useEffect(()=>{
-    checkAsyncStorage();
+    // checkAsyncStorage();
   },[])
 
   const checkAsyncStorage = async() =>{
@@ -31,7 +32,7 @@ export default function CartScreen({navigation}) {
      
       if(cart){
         const cartItems = JSON.parse(cart);
-        console.log(cartItems)
+    
         dispatch(loadInitialState(cartItems))
 
       }
@@ -59,6 +60,15 @@ export default function CartScreen({navigation}) {
     
     
   // }
+
+  const proceedToCheckout = () =>{
+    if(Object.keys(userInfo).length > 0) {
+      navigation.navigate("Shipping");
+    }
+    else{
+      navigation.navigate("Login")
+    }
+  }
   
 
   return (
@@ -98,20 +108,21 @@ export default function CartScreen({navigation}) {
                         </View>
                       
                     </View>
-                    <Button title={"Proceed to checkout"} style={{marginVertical:20}}  />
+                    <Button onPress={()=>proceedToCheckout()} title={"Proceed to checkout"} style={{marginVertical:20}}  />
                     </>
                 }
               
                 renderItem={({item,index})=>{
+                 
                   return(
                     <View paddingV-10>
                       <CartProduct 
                         key={index} 
                         item={item} 
-                        onIncreaseCount={()=>increaseCount(item.id)} 
-                        onDecreaseCount={()=>decreaseCount(item.id)} 
-                        onDelete={() => deleteItem(item.id)} 
-                        onPress={()=>navigation.navigate("Product",{id:item.id})}
+                        onIncreaseCount={()=>dispatch(addToCart({...item,qty:item.qty+1}))} 
+                        onDecreaseCount={()=>dispatch(addToCart({...item,qty:item.qty-1}))} 
+                        onDelete={() => dispatch(removeFromCart(item._id))} 
+                        onPress={()=>navigation.navigate("Product",{id:item._id})}
                         />
                     </View>
                   )

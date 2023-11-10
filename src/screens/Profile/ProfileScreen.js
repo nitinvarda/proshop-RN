@@ -16,18 +16,31 @@ export default function ProfileScreen({navigation}) {
   
   const colorScheme = useSelector((state)=>state.theme.colorScheme)
   const [switchValue,setSwitchValue] = useState(colorScheme=='light' ? false : true)
-  const authenticated = useSelector((state)=>state.auth.authenticated);
-  const user = useSelector((state)=>state.auth.user);
+
+  const userInfo = useSelector((state)=>state.auth.userInfo);
+  const user = Object.keys(userInfo).length > 0;
   const [logoutApi] = useLogoutMutation();
 
 
 
   const dispatch = useDispatch();
+  console.log({userInfo})
 
   useEffect(()=>{
-
+    // getDetails();
   },[colorScheme])
 
+
+  const getDetails = async () =>{
+    try {
+      const details = await AsyncStorage.getItem("userInfo");
+      if(details){
+        JSON.parse(details)
+      }
+    } catch (error) {
+      
+    }
+  }
 
   const redirectToLoginScreen = ()=>{
     navigation.navigate("Login")
@@ -38,8 +51,6 @@ export default function ProfileScreen({navigation}) {
       // const res = await logoutApi().unwrap();
       // console.log(res);
       dispatch(logout());
-      // await AsyncStorage.removeItem('userInfo');
-
     } catch (error) {
       console.log(error);
     }
@@ -53,21 +64,21 @@ export default function ProfileScreen({navigation}) {
       <NavBar onPress={()=>navigation.goBack()} screenName={'Profile'} />
       <View style={{flex:1}}>
         <View style={{flex:1}}>
-          {authenticated ? (
+          {user ? (
             <View style={styles().info}>
               <View style={styles(colorScheme).info_profile}>
                 
 
-                  <Text style={{fontSize:40,color:Assets.Colors(colorScheme).textPrimary}}>{user.name?.substring(0,1)}</Text>
+                  <Text style={{fontSize:40,color:Assets.Colors(colorScheme).textPrimary}}>{userInfo.name?.substring(0,1)}</Text>
                
               </View>
               <View flex style={styles().info_name}>
                 <View>
-                  <Text style={styles(colorScheme).info_text}>{user.name}</Text>
+                  <Text style={styles(colorScheme).info_text}>{userInfo.name}</Text>
                 
                 </View>
                 <View >
-                  <Text style={styles(colorScheme).info_text}>{user.email}</Text>
+                  <Text style={styles(colorScheme).info_text}>{userInfo.email}</Text>
                 </View>
               </View>
             </View>
@@ -81,7 +92,7 @@ export default function ProfileScreen({navigation}) {
           )}
 
           <View>
-            {authenticated  && (
+            {user  && (
               <>
             
             <View style={styles(colorScheme).settings}>
@@ -108,7 +119,7 @@ export default function ProfileScreen({navigation}) {
               
               
             </View>
-            {authenticated  && (
+            {user  && (
 
               <View style={styles(colorScheme).settings}>
               <TouchableOpacity style={styles().settings_touchable} onPress={logOutUser}><Text style={styles(colorScheme).settings_heading}>Logout</Text></TouchableOpacity>

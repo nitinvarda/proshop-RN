@@ -12,7 +12,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import Assets from '../../assets/Theme';
 import {useGetProductsQuery} from '../../slices/productsApiSlice';
 import useAuth from '../../hooks/useAuth';
-import { setCredentials } from '../../slices/authSlice';
+import { load, setCredentials } from '../../slices/authSlice';
+import AsyncStorage from '@react-native-async-storage/async-storage';
  
 
 const windowWidth = Dimensions.get('window').width;
@@ -21,14 +22,18 @@ const windowHeight = Dimensions.get('window').height;
 export default function HomeScreen({navigation}) {
     const input = React.createRef();
     const colorScheme = useSelector((state)=>state.theme.colorScheme)
-    const authenticated = useSelector((state)=>state.auth.authenticated);
+
+    const {userInfo} = useSelector((state)=>state.auth);
+    console.log(userInfo)
     
 
 
     const {data:products,isLoading,error} = useGetProductsQuery();
-    const {userInfo,auth} = useAuth();
+    
 
     const cart = useSelector(state=>state.cart);
+    console.log({cart})
+
  
     const dispatch = useDispatch();
  
@@ -36,15 +41,13 @@ export default function HomeScreen({navigation}) {
     // const products = data?.products;
 
     useEffect(()=>{
-        if(auth){
-            dispatch(setCredentials({user:userInfo}))
-
-        }
+       
+      
         
         
         
 
-    },[authenticated,userInfo])
+    },[userInfo])
 
 
     const renderProducts = ({ item, index }) => {
@@ -99,7 +102,7 @@ export default function HomeScreen({navigation}) {
                         <FrontAwesome onPress={()=>navigation.navigate('Profile')} name="user" size={30} color={Assets.Colors(colorScheme).textPrimary} />
                         <View>
                             <Ionicons onPress={()=>navigation.navigate('Cart')} name='cart' size={30} color={Assets.Colors(colorScheme).textPrimary} />
-                            <View style={{
+                            {/* <View style={{
                                     position:'absolute',
                                     top:0,
                                     right:0,
@@ -110,8 +113,8 @@ export default function HomeScreen({navigation}) {
                                     alignItems:'center',
                                     backgroundColor:'red'
                                 }}>
-                                    <Text>{cart.cartItems.length}</Text>
-                                </View>
+                                    <Text>{cart.cartItems.reduce((a,c)=>a+c.qty,0)}</Text>
+                                </View> */}
 
                         </View>
                     </View>

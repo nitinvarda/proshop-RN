@@ -29,11 +29,9 @@ export default function LoginScreen(props) {
 
   const loginUser = async() =>{
     try {
-      // const res = await login({email,password}).unwrap();
-      // console.log(res)
-      // dispatch(setCredentials({user:res}));
-      // await AsyncStorage.setItem("userInfo",JSON.stringify(res));
-      throw new Error("wrong email or password")
+      const res = await login({email,password}).unwrap();
+    
+      dispatch(setCredentials({user:res}));
     } catch (error) {
     
       setError(error.message);
@@ -48,7 +46,7 @@ export default function LoginScreen(props) {
   
   return (
     <SafeAreaView style={{flex:1,backgroundColor:Assets.Colors(colorScheme).primary}}>
-      <NavBar onPress={()=>props.navigation.navigate("Home")} screenName={loginView ? "Login" : "Sign Up"} />
+      <NavBar onPress={()=>props.navigation.goBack()} screenName={loginView ? "Login" : "Sign Up"} />
       <ErrorModal error={error} setError={setError} />
       <View flex marginH-20 marginT-40>
         {!loginView && (
@@ -63,7 +61,7 @@ export default function LoginScreen(props) {
         </View>
         <View marginV-15>
           <Text style={styles(colorScheme).formHeader}>Password</Text>
-          <TextInput style={styles(colorScheme).textfield} value={password} onChangeText={(text)=>setPassword(text)} />
+          <TextInput style={styles(colorScheme).textfield} secureTextEntry={true} value={password} onChangeText={(text)=>setPassword(text)} />
         </View> 
         <View>
          

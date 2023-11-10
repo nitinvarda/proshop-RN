@@ -14,26 +14,28 @@ import { useSelector } from 'react-redux';
 const Home = createStackNavigator();
 
 export default function HomeNavigator(props) {
-  const authenticated = useSelector((state)=>state.auth.authenticated);
+  const userInfo = useSelector((state)=>state.auth.userInfo);
+  const authenticated = Object.keys(userInfo).length > 0
   useEffect(()=>{
 
   },[authenticated])
+  console.log("home",authenticated)
   
   return (
     <Home.Navigator initialRouteName='Home' screenOptions={{headerShown:false}}>
       <Home.Screen name="Home" component={HomeScreen} />
       <Home.Screen name="Product"component={ProductScreen}/>
       <Home.Screen name="Cart" component={CartScreen} />
-      <Home.Screen name="PlaceOrder" component={PlaceOrderScreen} />
       <Home.Screen name="Search" component={SearchScreen} />
 
       {authenticated ? (
         <>
+        <Home.Screen name="PlaceOrder" component={PlaceOrderScreen} />
         <Home.Screen name="Shipping" component={ShippingScreen} />
         <Home.Screen name="Payment" component={PaymentScreen} />
         </>
 
-      ) : <Home.Screen name='Login' component={LoginScreen} />
+      ) :  <Home.Screen name='Login' component={LoginScreen} />
     
       }
 

@@ -17,6 +17,8 @@ import StatusBar from '../../components/StatuBar';
 import Rating from '../../components/Rating';
 import { Incubator, PanningProvider, Picker } from 'react-native-ui-lib';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5'
+import Dialog from '../../components/Dialog';
+import Modal from '../../components/Modal';
 
 const windowWidth = Dimensions.get('window').width;
 const windowHeight = Dimensions.get('window').height;
@@ -24,17 +26,19 @@ const windowHeight = Dimensions.get('window').height;
 export default function ProductScreen(props) {
   const {params} = useRoute();
   const colorScheme = useSelector((state)=>state.theme.colorScheme)
-  const cartData  = useSelector(state=>state.cart)
+  // const {cartItems,itemsPrice,paymentMethod,shippingAddress,shippingPrice,taxPrice,totalPrice}  = useSelector(state=>state.cart)
   const {data:item,isLoading,error} = useGetProductDetailQuery(params?.id);
   const dispatch = useDispatch();
   const [qty,setQty] = useState(1);
+
+  const [openModal,setOpenModal] = useState(false);
   
   // const item = props.route?.params?.item;
 
-  console.log({cartData})
+  
 
   useEffect(()=>{
-    loadInitialState(item)
+    
   },[params.id])
 
 
@@ -125,23 +129,8 @@ export default function ProductScreen(props) {
                   <Text style={{fontSize:22,color:Assets.Colors(colorScheme).textPrimary}}>$ {item.price}</Text>
                   <View style={{borderWidth:1, width:60, paddingHorizontal:10, borderColor:Assets.Colors(colorScheme).textPrimary}}>
 
-                  
-                  <Picker 
-                    label={qty} 
-                    value={qty} 
-                    onChange={(value)=>setQty(value)} 
-                    labelColor={Assets.Colors(colorScheme).textPrimary} 
-                    topBarProps={{title: 'Quantity'}}
-                    trailingAccessory={<FontAwesome5 name="chevron-down" color={Assets.Colors(colorScheme).textPrimary} />}
-                    containerStyle={styles().qtyContainer}
-                    labelProps={{fontSize:18}}
-                    renderCustomModal={customModal}
-                    
-                    >
-                    {[...Array(3).keys()].map((item,index)=>(
-                      <Picker.Item key={index+1} value={item+1} label={item+1} labelStyle={{color:Assets.Colors(colorScheme).textPrimary}} />
-                    ))}
-                  </Picker>
+                  <Dialog qty={qty} changeQty={(value)=>setQty(value)} stock={item.countInStock} />
+                 
                   </View>
                 </View>
                 <View>

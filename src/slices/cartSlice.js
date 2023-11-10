@@ -4,17 +4,10 @@ import updateCart from '../utils/cartUtils';
 
 
 var initialState ={
-
     cartItems:[],
     shippingAddress:{},
     paymentMethod:'PayPal'
 }
-AsyncStorage.getItem('cart').then((value)=>{
-    if(value){
-        initialState = JSON.parse(value);
-    }
-    
-}).catch(err=>console.log(err))
 
 
 
@@ -27,6 +20,7 @@ const cartSlice = createSlice({
         },
         addToCart:(state,action)=>{
             const item = action.payload;
+            console.log(item)
             const existItem = state.cartItems.find((x)=>x._id === item._id);
             if(existItem){
                 state.cartItems = state.cartItems.map((x)=>x._id === existItem._id ? item : x);
@@ -35,24 +29,27 @@ const cartSlice = createSlice({
                 state.cartItems = [...state.cartItems,item];
             }
 
-            updateCart(state);
-
-            
-            
+            return updateCart(state);
         },
-        loadInitialState:(state,action)=>{
-            state.cartItems = action.payload.cartItems;
-            state.paymentMethod = action.payload.paymentMethod;
-            state.shippingAddress = action.payload.shippingAddress;
-            state.itemsPrice = action.payload.itemsPrice;
-            state.shippingPrice = action.payload.shippingPrice;
-            state.taxPrice = action.payload.taxPrice;
-            state.totalPrice = action.payload.totalPrice;
-
-    
+        removeFromCart:(state,action)=>{
+            console.log({id:action.payload})
+            state.cartItems = state.cartItems.filter((x)=>x._id !== action.payload);
+            return updateCart(state);
+        },
+        saveShippingAddress:(state,action)=>{
+            state.shippingAddress = action.payload;
+            return updateCart(state)
+        },
+        savePaymentMethod:(state,action)=>{
+            state.paymentMethod = action.payload;
+            return updateCart(state)
+        },
+        clearCartItems:(state,action)=>{
+            state.cartItems = []
+            return updateCart(state)
         }
     }
 })
 
-export const {addItem,loadInitialState,addToCart} = cartSlice.actions;
+export const {addItem,addToCart,removeFromCart,saveShippingAddress,clearCartItems} = cartSlice.actions;
 export default cartSlice.reducer;

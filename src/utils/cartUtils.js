@@ -16,7 +16,7 @@ const updateCart = (state) =>{
     
     //calculate total price
     state.totalPrice = (Number(state.itemsPrice) + Number(state.shippingPrice) + Number(state.taxPrice)).toFixed(2)
-    AsyncStorage.setItem("cart",JSON.stringify(state)).then((res)=>console.log(res)).catch(err=>console.log(err));
+    
     return state
 }
 
