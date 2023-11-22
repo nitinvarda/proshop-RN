@@ -6,7 +6,7 @@ export default function ErrorModal({error,setError}) {
 
     useEffect(()=>{
        
-        if(error.length > 0){
+        if(error?.length > 0){
 
             startAnimation()
         }

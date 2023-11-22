@@ -10,6 +10,8 @@ import PlaceOrderScreen from '../../screens/Home/PlaceOrderScreen';
 import SearchScreen from '../../screens/Home/SearchScreen';
 import LoginScreen from '../../screens/Login/LoginScreen';
 import { useSelector } from 'react-redux';
+import ProductListScreen from '../../screens/Home/ProductListScreen';
+import UserListScreen from '../../screens/Home/UserListScreen';
 
 const Home = createStackNavigator();
 
@@ -19,8 +21,8 @@ export default function HomeNavigator(props) {
   useEffect(()=>{
 
   },[authenticated])
-  console.log("home",authenticated)
-  
+
+ 
   return (
     <Home.Navigator initialRouteName='Home' screenOptions={{headerShown:false}}>
       <Home.Screen name="Home" component={HomeScreen} />
@@ -28,6 +30,13 @@ export default function HomeNavigator(props) {
       <Home.Screen name="Cart" component={CartScreen} />
       <Home.Screen name="Search" component={SearchScreen} />
 
+
+      {authenticated && userInfo.isAdmin && (
+        <>
+        <Home.Screen name="ProductList" component={ProductListScreen} />
+        <Home.Screen name="UserList" component={UserListScreen} />
+        </>
+      )}
       {authenticated ? (
         <>
         <Home.Screen name="PlaceOrder" component={PlaceOrderScreen} />

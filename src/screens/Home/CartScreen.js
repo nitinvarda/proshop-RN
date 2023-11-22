@@ -62,6 +62,7 @@ export default function CartScreen({navigation}) {
   // }
 
   const proceedToCheckout = () =>{
+    // navigation.navigate("OrdersScreen");
     if(Object.keys(userInfo).length > 0) {
       navigation.navigate("Shipping");
     }
@@ -101,6 +102,10 @@ export default function CartScreen({navigation}) {
                         <View row spread paddingT-5>
                           <Text style={styles(colorScheme).total_value_heading}>tax</Text>
                           <Text style={styles(colorScheme).total_value}>${taxPrice}</Text>
+                        </View>
+                        <View row spread paddingT-5>
+                          <Text style={styles(colorScheme).total_value_heading}>Shipping</Text>
+                          <Text style={styles(colorScheme).total_value}>${shippingPrice}</Text>
                         </View>
                         <View row spread paddingT-5>
                           <Text style={styles(colorScheme).total_value_heading}>total</Text>

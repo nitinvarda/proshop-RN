@@ -13,26 +13,29 @@ import { useSelector } from 'react-redux';
 const Profile = createStackNavigator();
 
 export default function ProfileNavigator(props) {
-  const authenticated = useSelector(state=>state.auth.authenticated)
+  const authenticated = useSelector(state=>state.auth.userInfo)
+  
   return (
     <Profile.Navigator initialRouteName='ProfileScreen'  screenOptions={{
       headerShown:false,
       
     }}>
       <Profile.Screen name="ProfileScreen" component={ProfileScreen} />
-      {
-        authenticated ? (
+      {authenticated && authenticated.isAdmin && (
+        <>
+        <Profile.Screen name="OrderListScreen" component={OrderListScreen}/>
+        </>
+      )}
+      {authenticated ? (
           <>
             <Profile.Screen name="OrderScreen" component={OrderScreen} />
-            <Profile.Screen name="OrderListScreen" component={OrderListScreen}/>
             <Profile.Screen name="UsersScreen" component={UsersScreen} />
             <Profile.Screen name="ProductsScreen" component={ProductsScreen} />
             <Profile.Screen name="OrdersScreen" component={OrdersScreen} />
           </>
         ) : (
           <Profile.Screen name="LoginNavigator" component={LoginNavigator} />
-        )
-      }
+        )}
     </Profile.Navigator>
   )
 }

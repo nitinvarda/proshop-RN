@@ -1,6 +1,6 @@
 import {StyleSheet, TouchableOpacity, StatusBar, Platform } from 'react-native'
 import React, { useEffect, useState } from 'react'
-import {Switch,View,Text} from 'react-native-ui-lib';
+import {Switch,View,Text, ExpandableSection} from 'react-native-ui-lib';
 import { useDispatch, useSelector } from 'react-redux'
 import {toggleDarkMode,toggleLightMode} from '../../slices/themeSlice'
 import NavBar from '../../components/NavBar'
@@ -11,6 +11,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import { useLoginMutation, useLogoutMutation } from '../../slices/usersApiSlice';
 import { logout } from '../../slices/authSlice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import AntDesign from 'react-native-vector-icons/AntDesign'
 
 export default function ProfileScreen({navigation}) {
   
@@ -20,11 +21,12 @@ export default function ProfileScreen({navigation}) {
   const userInfo = useSelector((state)=>state.auth.userInfo);
   const user = Object.keys(userInfo).length > 0;
   const [logoutApi] = useLogoutMutation();
+  const [openAdminOptions,setOpenAdminOptions] = useState(false)
 
 
 
   const dispatch = useDispatch();
-  console.log({userInfo})
+  
 
   useEffect(()=>{
     // getDetails();
@@ -99,7 +101,7 @@ export default function ProfileScreen({navigation}) {
               <TouchableOpacity style={styles().settings_touchable}><Text style={styles(colorScheme).settings_heading}>Edit Profile</Text></TouchableOpacity>
             </View>
             <View style={styles(colorScheme).settings}>
-              <TouchableOpacity style={styles().settings_touchable}><Text style={styles(colorScheme).settings_heading}>My Orders</Text></TouchableOpacity>
+              <TouchableOpacity onPress={()=>navigation.navigate("OrdersScreen")} style={styles().settings_touchable}><Text style={styles(colorScheme).settings_heading}>My Orders</Text></TouchableOpacity>
 
             </View>
             </>
@@ -119,6 +121,37 @@ export default function ProfileScreen({navigation}) {
               
               
             </View>
+            {userInfo.isAdmin && (
+            
+                <ExpandableSection 
+                  expanded={openAdminOptions} 
+                  onPress={()=>setOpenAdminOptions(!openAdminOptions)}
+                  sectionHeader={
+                    <View style={styles(colorScheme).settings}>
+                      <Text style={[styles(colorScheme).settings_heading,{paddingVertical:5}]}>Admin</Text>
+                      <AntDesign name={openAdminOptions ? 'up' :'down'}  size={20}/>
+                    </View>
+                  }
+                  
+                  >
+                <View style={{paddingHorizontal:20,borderBottomWidth:1}}>
+                  <TouchableOpacity onPress={()=>navigation.navigate("OrderListScreen")} >
+                    <Text style={{paddingVertical:5,fontSize:18}}>All orders</Text>
+                    
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={()=>navigation.navigate("UserList")}>
+                    <Text style={{paddingVertical:5,fontSize:18}}>All users</Text>
+
+                  </TouchableOpacity>
+                  <TouchableOpacity onPress={()=>navigation.navigate("ProductList")}>
+                  <Text style={{paddingVertical:5,fontSize:18}}>All products</Text>
+
+                  </TouchableOpacity>
+                </View>
+
+                </ExpandableSection>
+           
+            )}
             {user  && (
 
               <View style={styles(colorScheme).settings}>

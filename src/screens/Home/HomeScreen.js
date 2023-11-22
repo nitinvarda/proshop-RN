@@ -24,7 +24,7 @@ export default function HomeScreen({navigation}) {
     const colorScheme = useSelector((state)=>state.theme.colorScheme)
 
     const {userInfo} = useSelector((state)=>state.auth);
-    console.log(userInfo)
+
     
 
 
@@ -32,7 +32,7 @@ export default function HomeScreen({navigation}) {
     
 
     const cart = useSelector(state=>state.cart);
-    console.log({cart})
+
 
  
     const dispatch = useDispatch();

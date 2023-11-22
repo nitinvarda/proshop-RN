@@ -14,7 +14,7 @@ export default function Dialog(props) {
     const colorScheme = useSelector((state)=>state.theme.colorScheme)
     const dialogRef = useRef(null).current;
 
-    console.log((windowHeight/2 * props.stock/8))
+  
 
 
   return (

@@ -1,23 +1,27 @@
-import { TouchableOpacity,StyleSheet } from 'react-native'
+import { TouchableOpacity,StyleSheet, Modal, Alert,Button } from 'react-native'
 import {View,Text} from 'react-native-ui-lib'
-import React from 'react'
+import React, { useState } from 'react'
 import StatuBar from '../../components/StatuBar'
 import NavBar from '../../components/NavBar'
 import { useDispatch, useSelector } from 'react-redux'
 import Assets from '../../assets/Theme'
-import Button from '../../components/Button'
+// import Button from '../../components/Button'
 import { useCreateOrderMutation } from '../../slices/ordersApiSlice'
-import {clearCartItems} from '../../slices/cartSlice';
+import { useNavigation } from '@react-navigation/native'
 
-export default function PlaceOrderScreen({navigation}) {
+
+export default function PlaceOrderScreen(props) {
   const colorScheme = useSelector(state=>state.theme.colorScheme);
   const {cartItems,shippingAddress,paymentMethod,shippingPrice,itemsPrice,taxPrice,totalPrice} = useSelector(state=>state.cart)
   const dispatch = useDispatch();
+  const navigation = useNavigation();
   const [createOrder,{isLoading,error}] = useCreateOrderMutation();
+ 
 
-  const placeOrder = async()=>{
+
+  const placeOrderHandler = async()=>{
     try {
-      const res = await createOrder({
+      const result = await createOrder({
         orderItems:cartItems,
         shippingAddress,
         paymentMethod,
@@ -27,11 +31,16 @@ export default function PlaceOrderScreen({navigation}) {
         totalPrice
 
       }).unwrap();
-      dispatch(clearCartItems());
+    
+      // navigation.navigate("Profile",{screen:"OrdersScreen"});
     } catch (error) {
       console.log(error)
     }
   }
+  
+
+
+ 
   return (
     <View flex >
       <NavBar screenName={'Order'} onPress={()=>navigation.goBack()} />
@@ -55,8 +64,10 @@ export default function PlaceOrderScreen({navigation}) {
         </View>
       
     </View>
-    <Button onPress={()=>placeOrder()} title={"Place Order"} style={{marginVertical:20}}  />
-    </View>        
+    <Button onPress={placeOrderHandler} title="order" />
+    {/* <Button onPress={placeOrderHandler} title={"Place Order"} style={{marginVertical:20}}  /> */}
+    </View>     
+   
     </View>
   )
 }

@@ -15,7 +15,7 @@ export default function useCart() {
             
               if(items){
                 const cartItems = JSON.parse(items)
-                console.log(cartItems)
+              
                 setCartItems(cartItems);
                 getSubTotal(cartItems);
               }

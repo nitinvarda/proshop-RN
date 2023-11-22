@@ -8,10 +8,58 @@ export const ordersApiSlice = apiSlice.injectEndpoints({
             query:(order)=>({
                 url:ORDERS_URL,
                 method:'POST',
-                body:{...order},
+                body:order,
+            })
+        }),
+        getOrderDetails:builder.query({
+            query:(orderId)=>({
+                url:`${ORDERS_URL}/${orderId}`,
+                method:'GET'
+            }),
+            keepUnusedDataFor:5
+        }),
+        getOrders:builder.query({
+            query:()=>({
+                url:`${ORDERS_URL}/mine`,
+                method:'GET'
+            }),
+            keepUnusedDataFor:5
+        }),
+        payOrder:builder.mutation({
+            query:({orderId,details})=>({
+                url:`${ORDERS_URL}/${orderId}/pay`,
+                method:'PUT',
+                body:{...details}
+            })
+        }),
+        getOrderById:builder.query({
+            query:(orderId)=>({
+                url:`${ORDERS_URL}/${orderId}`,
+                method:'GET'
+            }),
+            keepUnusedDataFor:5
+        }),
+        getAllOrders:builder.query({
+            query:()=>({
+                url:ORDERS_URL,
+                method:'GET'
+            })
+        }),
+        deliverOrder: builder.mutation({
+            query:(orderId)=>({
+                url:`${ORDERS_URL}/${orderId}/deliver`,
+                method:"PUT"
             })
         })
     })
 });
 
-export const {useCreateOrderMutation} = ordersApiSlice;
+export const {
+    useCreateOrderMutation,
+    useGetOrderDetailsQuery,
+    useGetOrdersQuery,
+    usePayOrderMutation,
+    useGetOrderByIdQuery,
+    useGetAllOrdersQuery,
+    useDeliverOrderMutation
+} = ordersApiSlice;
