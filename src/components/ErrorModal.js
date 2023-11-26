@@ -5,7 +5,7 @@ export default function ErrorModal({error,setError}) {
     const value = useRef(new Animated.Value(-60)).current
 
     useEffect(()=>{
-       
+        console.log({error})
         if(error?.length > 0){
 
             startAnimation()
@@ -34,7 +34,8 @@ export default function ErrorModal({error,setError}) {
   return (
     <View style={{
         position:'absolute',
-        width:'100%'
+        width:'100%',
+        zIndex:100,
     }}>
     <Animated.View style={{
         

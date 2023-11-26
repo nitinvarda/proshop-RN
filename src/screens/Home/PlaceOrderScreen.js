@@ -8,6 +8,7 @@ import Assets from '../../assets/Theme'
 // import Button from '../../components/Button'
 import { useCreateOrderMutation } from '../../slices/ordersApiSlice'
 import { useNavigation } from '@react-navigation/native'
+import { clearCartItems } from '../../slices/cartSlice'
 
 
 export default function PlaceOrderScreen(props) {
@@ -15,7 +16,7 @@ export default function PlaceOrderScreen(props) {
   const {cartItems,shippingAddress,paymentMethod,shippingPrice,itemsPrice,taxPrice,totalPrice} = useSelector(state=>state.cart)
   const dispatch = useDispatch();
   const navigation = useNavigation();
-  const [createOrder,{isLoading,error}] = useCreateOrderMutation();
+  const [createOrder,{isLoading,error,isError},] = useCreateOrderMutation();
  
 
 
@@ -31,12 +32,15 @@ export default function PlaceOrderScreen(props) {
         totalPrice
 
       }).unwrap();
-    
-      // navigation.navigate("Profile",{screen:"OrdersScreen"});
-    } catch (error) {
-      console.log(error)
+      console.log(result);
+      dispatch(clearCartItems());
+      navigation.navigate("OrderScreen",{orderId:result._id});
+    } catch (err) {
+      console.log(err)
     }
   }
+
+  console.log({isLoading,error,isError})
   
 
 

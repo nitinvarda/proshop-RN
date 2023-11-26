@@ -63,7 +63,7 @@ export default function ProfileScreen({navigation}) {
       <View style={{width:'100%',height:Platform.OS=="ios" ? 60 : 0,backgroundColor:Assets.Colors(colorScheme).secondary}}>
 
       </View>
-      <NavBar onPress={()=>navigation.goBack()} screenName={'Profile'} />
+      <NavBar onPress={()=>navigation.navigate("Home")} screenName={'Profile'} />
       <View style={{flex:1}}>
         <View style={{flex:1}}>
           {user ? (

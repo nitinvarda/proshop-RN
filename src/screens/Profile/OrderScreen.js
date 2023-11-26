@@ -1,5 +1,5 @@
 import { View, Text,StyleSheet,Image, TouchableOpacity, ScrollView, ActivityIndicator, Modal, Alert } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import NavBar from '../../components/NavBar'
 import { useCreateOrderMutation, useGetOrderByIdQuery, usePayOrderMutation,useDeliverOrderMutation } from '../../slices/ordersApiSlice';
@@ -10,10 +10,13 @@ import Button from '../../components/Button';
 import {generateToken,createPaypalOrder, capturePayment} from '../../utils/paypalApi'
 import WebView from 'react-native-webview';
 import queryString from 'query-string';
+import { clearCartItems } from '../../slices/cartSlice';
+import Loading from '../../components/Loading';
 
 export default function OrderScreen(props) {
   const {navigation,route} = props;
   const orderId = route.params?.orderId
+  console.log({orderId})
   const {data,isLoading,error,refetch} = useGetOrderByIdQuery(orderId)
   const colorScheme = useSelector(state=>state.theme.colorScheme);
   const userInfo = useSelector(state=>state.auth.userInfo);
@@ -31,11 +34,12 @@ export default function OrderScreen(props) {
   const [accessToken,setAccessToken] = useState();
   const [loading,setLoading]= useState(false);
   const [payPalUrl,setPaypalUrl] = useState(null);
+  const WebViewRef = useRef();
 
   useEffect(()=>{
     
   },[orderId])
-
+  console.log({data})
   const clearPayPalState = () =>{
     setPaypalUrl(null);
     setAccessToken(null);
@@ -51,16 +55,25 @@ export default function OrderScreen(props) {
             "admin_area_1":"Illinois",
             "country_code": data?.shippingAddress?.country
         }
-        
+       
+        const orderParams = {
+          cartItems:data?.orderItems,
+          totalPrice:data?.totalPrice,
+          itemsPrice,
+          shippingPrice:data?.shippingPrice,
+          taxPrice:data?.taxPrice,address
+        }
+        console.log({address,orderParams})
       const token = await generateToken();
-      const result = await createPaypalOrder(token,{cartItems:data?.orderItems,totalPrice:data?.totalPrice,itemsPrice,shippingPrice:data?.shippingPrice,taxPrice:data?.taxPrice,address});
+      const result = await createPaypalOrder(token,orderParams);
+      console.log({result})
       setAccessToken(token);
       setLoading(false)
 
       if(!!result?.links){
    
         const findUrl = result?.links.find(data=>data.rel == "approve")
-
+        console.log({findUrl})
         setPaypalUrl(findUrl.href);
       }
     } catch (error) {
@@ -72,13 +85,17 @@ export default function OrderScreen(props) {
     try {
         const res = await capturePayment(id, accessToken)
    
-       
+        console.log({resultAfterCapturePayment:res});
         await payOrder({orderId,details:res})
         
         Alert.alert("Payment sucessfull","Your order have been placed and paid successfully",[{
           text:'OK',onPress:()=>{
-            dispatch(clearCartItems());
-            navigation.navigate("ProfileScreen",{screen:"OrdersScreen",params:"hello"});
+            
+          
+            clearPayPalState();
+            refetch();
+
+            // navigation.navigate("ProfileScreen",{screen:"OrdersScreen",params:"hello"});
           }
         }])
         
@@ -131,12 +148,10 @@ export default function OrderScreen(props) {
 
   
   return (
-    <SafeAreaView style={{flex:1}}>
+    <SafeAreaView style={{flex:1,backgroundColor:Assets.Colors(colorScheme).primary}}>
       <NavBar screenName={"Order"} onPress={()=>props.navigation.goBack()}  />
       {isLoading ? (
-        <View style={{flex:1,flexDirection:'row',justifyContent:'center',alignItems:'center'}}>
-          <ActivityIndicator size={"large"} />
-        </View>
+        <Loading />
       ) :
       error? (
         <View>
@@ -145,18 +160,18 @@ export default function OrderScreen(props) {
       ) :
       <ScrollView showsVerticalScrollIndicator={false} style={{flex:1,marginHorizontal:20,marginBottom:10}}>
         <View>
-          <Text style={styles(colorScheme).orderHeading}>Shipping</Text>
+          <Text style={styles(colorScheme).orderHeading}>{data._id}</Text>
           <View style={styles(colorScheme).shippingValuesContainer}>
             <Text style={styles(colorScheme).shippingValuesHeading}>Name : </Text>
-            <Text>{data?.user?.name}</Text>
+            <Text style={{color:Assets.Colors(colorScheme).textPrimary}}>{data?.user?.name}</Text>
           </View>
           <View style={styles().shippingValuesContainer}>
             <Text style={styles(colorScheme).shippingValuesHeading}>Email : </Text>
-            <Text>{data?.user?.email}</Text>
+            <Text style={{color:Assets.Colors(colorScheme).textPrimary}} >{data?.user?.email}</Text>
           </View>
           <View style={styles().shippingValuesContainer}>
             <Text style={styles(colorScheme).shippingValuesHeading}>Address : </Text>
-            <Text>{data?.shippingAddress?.address}, {data?.shippingAddress?.city}, {data?.shippingAddress?.country}, {data?.shippingAddress?.postalCode}</Text>
+            <Text style={{color:Assets.Colors(colorScheme).textPrimary}}>{data?.shippingAddress?.address}, {data?.shippingAddress?.city}, {data?.shippingAddress?.country}, {data?.shippingAddress?.postalCode}</Text>
           </View>
           <View style={{backgroundColor:data?.isDelivered ? "#00b300" : "#ff6666",padding:15,borderRadius:10}}>
               {data?.isDelivered ? 
@@ -171,7 +186,7 @@ export default function OrderScreen(props) {
         <Text style={styles(colorScheme).orderHeading}>Payment Method</Text>
         <View style={styles().shippingValuesContainer}>
           <Text style={styles(colorScheme).shippingValuesHeading}>Payment : </Text>
-          <Text>{data?.paymentMethod}</Text>
+          <Text style={{color:Assets.Colors(colorScheme).textPrimary,fontSize:16}}>{data?.paymentMethod}</Text>
           
         </View>
          
@@ -193,9 +208,9 @@ export default function OrderScreen(props) {
                 <Image source={{uri:`${BASE_URL}/api/image/${item.image}`}} style={{width:60,height:60,borderRadius:10,objectFit:'contain'}} />
                 <View style={styles(colorScheme).itemCardDesc}>
                  
-                    <Text>{item.name}</Text>
+                    <Text style={{color:Assets.Colors(colorScheme).textPrimary,fontSize:16}}>{item.name}</Text>
             
-                  <Text>{item.qty} X {item.price} = {Number(item.qty) * Number(item.price)}</Text>
+                  <Text style={{color:Assets.Colors(colorScheme).textPrimary,fontSize:16}}>{item.qty} X {item.price} = {Number(item.qty) * Number(item.price)}</Text>
                 </View>
               </TouchableOpacity>
             ))}
@@ -207,23 +222,23 @@ export default function OrderScreen(props) {
           <Text style={styles(colorScheme).orderHeading}>Order Summary</Text>
           <View>
             <View style={styles(colorScheme).priceItems}>
-              <Text>items</Text>
-              <Text>{itemsPrice}</Text>
+              <Text style={{color:Assets.Colors(colorScheme).textPrimary,fontSize:16}}>items</Text>
+              <Text style={{color:Assets.Colors(colorScheme).textPrimary,fontSize:16}}>{itemsPrice}</Text>
 
             </View>
             <View style={styles(colorScheme).priceItems}>
-              <Text>Shipping</Text>
-              <Text>{data?.shippingPrice}</Text>
+              <Text style={{color:Assets.Colors(colorScheme).textPrimary,fontSize:16}}>Shipping</Text>
+              <Text style={{color:Assets.Colors(colorScheme).textPrimary,fontSize:16}}>{data?.shippingPrice}</Text>
 
             </View>
             <View style={styles(colorScheme).priceItems}>
-              <Text>tax</Text>
-              <Text>{data?.taxPrice}</Text>
+              <Text style={{color:Assets.Colors(colorScheme).textPrimary,fontSize:16}}>tax</Text>
+              <Text style={{color:Assets.Colors(colorScheme).textPrimary,fontSize:16}}>{data?.taxPrice}</Text>
 
             </View>
             <View style={styles(colorScheme).priceItems}>
-              <Text>total</Text>
-              <Text>{data?.totalPrice}</Text>
+              <Text style={{color:Assets.Colors(colorScheme).textPrimary,fontSize:16}}>total</Text>
+              <Text style={{color:Assets.Colors(colorScheme).textPrimary,fontSize:16}}>{data?.totalPrice}</Text>
 
             </View>
           </View>
@@ -231,7 +246,7 @@ export default function OrderScreen(props) {
         {!userInfo?.isAdmin  && !data?.isPaid && (
 
           <View style={{paddingVertical:10}}>
-          <Button  title={"Paypal"} onPress={()=>payWithPaypal()} />
+          <Button  title={"Paypal"} onPress={payWithPaypal} />
         </View>
           )}
           {userInfo &&  userInfo.isAdmin  && data.isPaid && !data.isDelivered && (
@@ -246,6 +261,7 @@ export default function OrderScreen(props) {
           </TouchableOpacity>
           <View style={{flex:1}}>
               <WebView
+              
                 source={{uri:payPalUrl}}
                 onNavigationStateChange={onUrlChange}
               />
@@ -282,7 +298,9 @@ const styles = (value) => StyleSheet.create({
     paddingVertical:5
   },
   shippingValuesHeading:{
-    fontWeight:'bold'
+    fontWeight:'bold',
+    color:Assets.Colors(value).textPrimary,
+    fontSize:16
   },
   itemCard:{
     flexDirection:'row',

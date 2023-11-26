@@ -1,4 +1,4 @@
-import { View, Text, ActivityIndicator,Image, FlatList, TouchableOpacity } from 'react-native'
+import { View, Text,Image, FlatList, TouchableOpacity } from 'react-native'
 import React, { useState } from 'react'
 import { useGetOrdersQuery } from '../../slices/ordersApiSlice'
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -6,24 +6,26 @@ import NavBar from '../../components/NavBar'
 import { BASE_URL } from '../../redux/constants/constants'
 import {ExpandableSection} from 'react-native-ui-lib'
 import AntDesign from 'react-native-vector-icons/AntDesign'
+import Loading from '../../components/Loading'
+import Assets from '../../assets/Theme'
+import { useSelector } from 'react-redux'
 
 export default function OrdersScreen(props) {
 
   const {navigation} = props;
   const {data,isLoading,error} = useGetOrdersQuery()
   const [expandItem,setExpandItem] = useState(null)
-  return isLoading? (
-    <View style={{flex:1}}>
-      <ActivityIndicator size={'large'}  />
-    </View>
-    ) : error ? (
+  const colorScheme = useSelector(state=>state.theme.colorScheme);
+
+  console.log(data)
+  return isLoading? <Loading /> : error ? (
       <View>
         <Text>{error.message}</Text>
       </View>
     ) :
-    <SafeAreaView style={{flex:1}}>
+    <SafeAreaView style={{flex:1,backgroundColor:Assets.Colors(colorScheme).primary}}>
       <NavBar onPress={()=>navigation.goBack()} screenName={'Orders'} />
-      <View style={{flex:1,marginHorizontal:20}}>
+      <View style={{flex:1}}>
         {data.map((order)=>(
 
          
@@ -35,13 +37,14 @@ export default function OrdersScreen(props) {
                 flexDirection:'row',
                 justifyContent:'space-between',
                 alignItems:'center',
-                backgroundColor:'white',
-                padding:15,
+                backgroundColor:Assets.Colors(colorScheme).secondary,
+                paddingVertical:15,
+                paddingHorizontal:20
                 
                 }}>
-                <Text>{order.orderItems.length} items </Text>
-                <Text>Placed on {order.createdAt.substring(0,10)}</Text>
-                <AntDesign name='down' />
+                <Text style={{color:Assets.Colors(colorScheme).textPrimary}}>{order.orderItems.length} items </Text>
+                <Text style={{color:Assets.Colors(colorScheme).textPrimary}}>Placed on {order.createdAt.substring(0,10)}</Text>
+                <AntDesign name='down' size={18} color={Assets.Colors(colorScheme).textPrimary} />
               </View>
             }
             onPress={()=>{
@@ -60,7 +63,7 @@ export default function OrdersScreen(props) {
                 data={order.orderItems}
                 keyExtractor={(item)=>item._id}
                 renderItem={({item})=>(
-                  <View style={{backgroundColor:'white',padding:15,flexDirection:'row',}} >
+                  <View style={{backgroundColor:Assets.Colors(colorScheme).secondary,padding:15,flexDirection:'row',}} >
                     <Image source={{uri:`${BASE_URL}/api/image/${item.image}`}} style={{width:90,height:90,borderRadius:10,objectFit:'contain'}} />
                     <View style={{flexDirection:'column',alignItems:'center',justifyContent:'space-between'}}>
                       <View style={{flexDirection:'column',justifyContent:'center',width:'80%'}}>
@@ -72,11 +75,11 @@ export default function OrdersScreen(props) {
 
                         ) : 
                       } */}
-                      <Text>{item.name}</Text>
+                      <Text style={{fontSize:16,color:Assets.Colors(colorScheme).textPrimary}}>{item.name}</Text>
                       </View>
                       <View style={{flexDirection:'row',alignItems:'center'}}>
-                        <Text>{item.qty} x</Text>
-                        <Text> $ {item.price}</Text>
+                        <Text style={{color:Assets.Colors(colorScheme).textPrimary}}>{item.qty} x</Text>
+                        <Text style={{color:Assets.Colors(colorScheme).textPrimary}}> $ {item.price}</Text>
                       </View>
                     </View>
                     
@@ -85,14 +88,27 @@ export default function OrdersScreen(props) {
                 />
                 <View 
                   style={{
-                    backgroundColor:'white',
+                    backgroundColor:Assets.Colors(colorScheme).secondary,
                     flexDirection:'row',
                     justifyContent:'space-between',
                     alignItems:'center',
-                    paddingHorizontal:20
+                    paddingHorizontal:20,
+                    borderBottomWidth:1,
+                    paddingBottom:10,
+                    borderColor:Assets.Colors(colorScheme).textPrimary
+                    
                     }}>
-                  <Text>$ {order.totalPrice}</Text>
-                  <Text>Shipped</Text>
+                  <Text style={{color:Assets.Colors(colorScheme).textPrimary}}>$ {order.totalPrice}</Text>
+                  <View style={{flexDirection:'row',alignItems:'center'}}>
+                    <Text style={{color:Assets.Colors(colorScheme).textPrimary,paddingRight:10}}>Paid</Text>
+                
+                    <AntDesign name={order.isPaid ? 'check' :'close'} color={order.isPaid ? "#00cc44" : "#ff3300"} size={18} />
+
+                  </View>
+                  <View style={{flexDirection:'row',alignItems:'center'}}>
+                    <Text style={{color:Assets.Colors(colorScheme).textPrimary,paddingRight:10}}>Delivered</Text>
+                    <AntDesign name={order.isDelivered ? 'check' :'close'} color={order.isDelivered ? "#00cc44" : "#ff3300"} size={18} />
+                  </View>
                 </View>
                 
               </TouchableOpacity>

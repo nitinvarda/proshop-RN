@@ -6,12 +6,16 @@ import { useSelector } from 'react-redux';
 
 export default function Button(props) {
     const colorScheme = useSelector((state)=>state.theme.colorScheme)
-  
+
+    
+
+      
   return (
     <TouchableOpacity activeOpacity={0.5} onPress={props.onPress} style={[styles(colorScheme).btn,props.style]}>
       <Text style={[styles(colorScheme).btnText,props.titleProps]}>{props.title}</Text>
     </TouchableOpacity>
   )
+
 }
 
 const styles = (value) => StyleSheet.create({
