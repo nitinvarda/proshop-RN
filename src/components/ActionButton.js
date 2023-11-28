@@ -14,12 +14,13 @@ export default function ActionButton(props) {
         left:20,
         right:20,
     }}>
-      <Button onPress={props.onPress} title={props.buttonText}  />
+      <Button onPress={props.onPress} title={props.buttonText} style={props.buttonStyle}  />
     </View>
   )
 }
 
 ActionButton.prototype = {
   onPress:PropType.func,
-  buttonText:PropType.string
+  buttonText:PropType.string,
+  buttonStyle:PropType.object
 }

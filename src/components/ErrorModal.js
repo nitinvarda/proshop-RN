@@ -1,11 +1,12 @@
 import { View, Text,Animated, StatusBar, Easing } from 'react-native'
 import React, { useEffect, useRef } from 'react'
+import { SafeAreaView } from 'react-native-safe-area-context'
 
 export default function ErrorModal({error,setError}) {
     const value = useRef(new Animated.Value(-60)).current
 
     useEffect(()=>{
-        console.log({error})
+    
         if(error?.length > 0){
 
             startAnimation()
@@ -32,6 +33,9 @@ export default function ErrorModal({error,setError}) {
         }).start(()=>setError(''))
     }
   return (
+    <SafeAreaView edges={'top'} style={{position:'relative',zIndex:100}}>
+
+   
     <View style={{
         position:'absolute',
         width:'100%',
@@ -51,5 +55,6 @@ export default function ErrorModal({error,setError}) {
       <Text style={{color:'white',fontSize:18}}>{error}</Text>
     </Animated.View>
     </View>
+    </SafeAreaView>
   )
 }

@@ -1,4 +1,4 @@
-import { StyleSheet, TextInput } from 'react-native'
+import { Platform, StyleSheet, TextInput } from 'react-native'
 import React, { useState } from 'react'
 import {Text,View} from 'react-native-ui-lib'
 import NavBar from '../../components/NavBar'
@@ -7,6 +7,8 @@ import Assets from '../../assets/Theme';
 import ActionButton from '../../components/ActionButton';
 import Button from '../../components/Button';
 import { saveShippingAddress } from '../../slices/cartSlice';
+import IosSafeArea from '../../components/IosSafeArea';
+import ErrorModal from '../../components/ErrorModal';
 
 export default function ShippingScreen({navigation}) {
   const colorScheme = useSelector(state=>state.theme.colorScheme);
@@ -17,21 +19,47 @@ export default function ShippingScreen({navigation}) {
   const [state,setState] = useState(cart.shippingAddress?.state ?? "")
   const [country,setCountry] = useState(cart.shippingAddress?.country ??"");
   const dispatch = useDispatch();
+  const [error,setError] = useState("")
 
 
   const shippingAddress = () =>{
-    dispatch(saveShippingAddress({
-      address,
-      city,
-      postalCode,
-      state,
-      country
-    }))
-    navigation.navigate('PlaceOrder')
+    try{
+      if(
+        address.length > 0 && 
+        city.length > 0 && 
+        postalCode.length>0 &&
+        state.length > 0 &&
+        country.length > 0){
+          if(country.length < 3){
+            dispatch(saveShippingAddress({
+              address,
+              city,
+              postalCode,
+              state,
+              country
+            }))
+            navigation.navigate('PlaceOrder')
+
+          }
+          else{
+            throw new Error("Country value should consist of exactly two letters.")
+          }
+  
+        }
+        else{
+          throw new Error("Fill all values")
+        }
+    }
+    catch(error){
+      setError(error.message)
+    }
+   
   }
   return (
     <View style={styles(colorScheme).container}>
+      <IosSafeArea />
       <NavBar screenName={'Shipping'} onPress={()=>navigation.goBack()} />
+      <ErrorModal error={error} setError={setError} />
       <View style={styles().form_container}>
         <View marginV-15>
             <Text style={styles(colorScheme).formHeader}>Address</Text>

@@ -21,7 +21,7 @@ export default function OrderListScreen(props) {
   </View>
   ) : 
     (<SafeAreaView style={{flex:1}}>
-      <NavBar screenName={"All Orders"} onPress={()=>navigation.goBack()} />
+      <NavBar screenName={"All Orders"} onPress={()=>navigation.navigate("Profile",{screen:'ProfileScreen'})} />
       <ScrollView style={{flex:1,paddingBottom:20}}  >
         {data?.map(order=>(
           <TouchableOpacity onPress={()=>navigation.navigate("OrderScreen",{orderId:order._id})} style={{

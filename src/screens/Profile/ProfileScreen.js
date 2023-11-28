@@ -12,6 +12,7 @@ import { useLoginMutation, useLogoutMutation } from '../../slices/usersApiSlice'
 import { logout } from '../../slices/authSlice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import AntDesign from 'react-native-vector-icons/AntDesign'
+import IosSafeArea from '../../components/IosSafeArea';
 
 export default function ProfileScreen({navigation}) {
   
@@ -60,9 +61,7 @@ export default function ProfileScreen({navigation}) {
 
   return (
     <View style={{flex:1,backgroundColor:Assets.Colors(colorScheme).primary}}>
-      <View style={{width:'100%',height:Platform.OS=="ios" ? 60 : 0,backgroundColor:Assets.Colors(colorScheme).secondary}}>
-
-      </View>
+      <IosSafeArea />
       <NavBar onPress={()=>navigation.navigate("Home")} screenName={'Profile'} />
       <View style={{flex:1}}>
         <View style={{flex:1}}>
@@ -71,7 +70,7 @@ export default function ProfileScreen({navigation}) {
               <View style={styles(colorScheme).info_profile}>
                 
 
-                  <Text style={{fontSize:40,color:Assets.Colors(colorScheme).textPrimary}}>{userInfo.name?.substring(0,1)}</Text>
+                  <Text style={{fontSize:40,color:Assets.Colors(colorScheme).textPrimary}}>{userInfo.name?.substring(0,1).toUpperCase()}</Text>
                
               </View>
               <View flex style={styles().info_name}>
@@ -94,11 +93,11 @@ export default function ProfileScreen({navigation}) {
           )}
 
           <View>
-            {user  && (
+            {user && !userInfo.isAdmin  && (
               <>
             
             <View style={styles(colorScheme).settings}>
-              <TouchableOpacity style={styles().settings_touchable}><Text style={styles(colorScheme).settings_heading}>Edit Profile</Text></TouchableOpacity>
+              <TouchableOpacity onPress={()=>navigation.navigate("EditProfileScreen")} style={styles().settings_touchable}><Text style={styles(colorScheme).settings_heading}>Edit Profile</Text></TouchableOpacity>
             </View>
             <View style={styles(colorScheme).settings}>
               <TouchableOpacity onPress={()=>navigation.navigate("OrdersScreen")} style={styles().settings_touchable}><Text style={styles(colorScheme).settings_heading}>My Orders</Text></TouchableOpacity>

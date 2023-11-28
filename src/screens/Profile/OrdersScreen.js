@@ -9,6 +9,7 @@ import AntDesign from 'react-native-vector-icons/AntDesign'
 import Loading from '../../components/Loading'
 import Assets from '../../assets/Theme'
 import { useSelector } from 'react-redux'
+import IosSafeArea from '../../components/IosSafeArea'
 
 export default function OrdersScreen(props) {
 
@@ -17,19 +18,21 @@ export default function OrdersScreen(props) {
   const [expandItem,setExpandItem] = useState(null)
   const colorScheme = useSelector(state=>state.theme.colorScheme);
 
-  console.log(data)
+
   return isLoading? <Loading /> : error ? (
       <View>
         <Text>{error.message}</Text>
       </View>
     ) :
-    <SafeAreaView style={{flex:1,backgroundColor:Assets.Colors(colorScheme).primary}}>
-      <NavBar onPress={()=>navigation.goBack()} screenName={'Orders'} />
+    <View style={{flex:1,backgroundColor:Assets.Colors(colorScheme).primary}}>
+      <IosSafeArea />
+      <NavBar onPress={()=>navigation.navigate("HomeNav",{screen:"Home"})} screenName={'Orders'} />
       <View style={{flex:1}}>
         {data.map((order)=>(
 
          
             <ExpandableSection
+          
             expanded={expandItem==order._id}
             sectionHeader={
               <View 
@@ -123,5 +126,5 @@ export default function OrdersScreen(props) {
           )}
 
       </View>
-    </SafeAreaView> 
+    </View> 
 }

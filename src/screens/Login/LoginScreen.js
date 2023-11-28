@@ -9,6 +9,7 @@ import { useLoginMutation } from '../../slices/usersApiSlice'
 import { setCredentials } from '../../slices/authSlice'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import ErrorModal from '../../components/ErrorModal'
+import IosSafeArea from '../../components/IosSafeArea'
 
 export default function LoginScreen(props) {
   const colorScheme = useSelector(state=>state.theme.colorScheme);
@@ -29,9 +30,17 @@ export default function LoginScreen(props) {
 
   const loginUser = async() =>{
     try {
-      const res = await login({email,password}).unwrap();
+      if(email.length > 0 && password.length > 0){
+
+        const res = await login({email,password}).unwrap();
+      
+        dispatch(setCredentials({user:res}));
+      } 
+      else{
+        throw new Error("email or password cannot be empty");
+      }
+        
     
-      dispatch(setCredentials({user:res}));
     } catch (error) {
     
       setError(error.message);
@@ -40,12 +49,23 @@ export default function LoginScreen(props) {
   }
 
   const signupUser = async() =>{
+    try {
+      
+      if(email.length > 0 && password.length >0){
+      }
+      else{
+        throw new Error("Email or password cannot be empty")
+      }
+    } catch (error) {
+      setError(error.message)
+    }
 
   }
 
   
   return (
-    <SafeAreaView style={{flex:1,backgroundColor:Assets.Colors(colorScheme).primary}}>
+    <View style={{flex:1,backgroundColor:Assets.Colors(colorScheme).primary}}>
+      <IosSafeArea />
       <NavBar onPress={()=>props.navigation.goBack()} screenName={loginView ? "Login" : "Sign Up"} />
       <ErrorModal error={error} setError={setError} />
       <View flex marginH-20 marginT-40>
@@ -74,7 +94,7 @@ export default function LoginScreen(props) {
           <Button title={loginView ? 'Login' : 'Sign up'} onPress={loginView ? loginUser : signupUser} />
         </View>
       </View>
-    </SafeAreaView>
+    </View>
   )
 }
 

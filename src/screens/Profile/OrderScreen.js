@@ -12,18 +12,23 @@ import WebView from 'react-native-webview';
 import queryString from 'query-string';
 import { clearCartItems } from '../../slices/cartSlice';
 import Loading from '../../components/Loading';
+import OrderInfo from '../../components/OrderDetails/OrderInfo';
+import ShippingAddress from '../../components/OrderDetails/ShippingAddress';
+import PaymentMethod from '../../components/OrderDetails/PaymentMethod';
+import OrderSummary from '../../components/OrderDetails/OrderSummary';
+import Partition from '../../components/Partition';
+import IosSafeArea from '../../components/IosSafeArea';
+import ErrorModal from '../../components/ErrorModal';
 
 export default function OrderScreen(props) {
   const {navigation,route} = props;
   const orderId = route.params?.orderId
-  console.log({orderId})
-  const {data,isLoading,error,refetch} = useGetOrderByIdQuery(orderId)
+
+  const {data,isLoading,error:getOrderError,refetch} = useGetOrderByIdQuery(orderId)
   const colorScheme = useSelector(state=>state.theme.colorScheme);
   const userInfo = useSelector(state=>state.auth.userInfo);
   const [orderDetails,setOrderDetails] = useState({});
-  const itemsPrice = data?.orderItems.reduce((total,item)=>{
-    return total + Number(item.price)
-  },0)
+ 
   
   // pay
   const cart = useSelector(state=>state.cart);
@@ -32,14 +37,16 @@ export default function OrderScreen(props) {
   const [payOrder,{isLoading:payOrderLoading,error:payOrderError}] = usePayOrderMutation();
   const [deliverOrder,{isLoading:deliverOrderLoading,error:deliverOrderError}] = useDeliverOrderMutation();
   const [accessToken,setAccessToken] = useState();
-  const [loading,setLoading]= useState(false);
   const [payPalUrl,setPaypalUrl] = useState(null);
   const WebViewRef = useRef();
+  
+  
+  const [loading,setLoading]= useState(isLoading || createOrderLoading || payOrderLoading || deliverOrderLoading);
+  const [error,setError] = useState(getOrderError || payOrderError || createOrderError || deliverOrderError)
 
-  useEffect(()=>{
-    
-  },[orderId])
-  console.log({data})
+  const itemsPrice = data?.orderItems.reduce((acc,item)=> acc+item.price * item.qty,0);
+ 
+
   const clearPayPalState = () =>{
     setPaypalUrl(null);
     setAccessToken(null);
@@ -63,21 +70,21 @@ export default function OrderScreen(props) {
           shippingPrice:data?.shippingPrice,
           taxPrice:data?.taxPrice,address
         }
-        console.log({address,orderParams})
+        
       const token = await generateToken();
       const result = await createPaypalOrder(token,orderParams);
-      console.log({result})
+  
       setAccessToken(token);
       setLoading(false)
 
       if(!!result?.links){
    
         const findUrl = result?.links.find(data=>data.rel == "approve")
-        console.log({findUrl})
+  
         setPaypalUrl(findUrl.href);
       }
     } catch (error) {
-      console.log({error})
+     setError(error.message)
     }
   }
 
@@ -85,14 +92,12 @@ export default function OrderScreen(props) {
     try {
         const res = await capturePayment(id, accessToken)
    
-        console.log({resultAfterCapturePayment:res});
+   
         await payOrder({orderId,details:res})
         
         Alert.alert("Payment sucessfull","Your order have been placed and paid successfully",[{
           text:'OK',onPress:()=>{
             
-          
-            clearPayPalState();
             refetch();
 
             // navigation.navigate("ProfileScreen",{screen:"OrdersScreen",params:"hello"});
@@ -101,22 +106,11 @@ export default function OrderScreen(props) {
         
     } catch (error) {
         console.log("error raised in payment capture", error)
+        setError(error.message)
     }
 
       
-    if (webViewState.url.includes('https://example.com/cancel')) {
-      clearPayPalState()
-      return;
-    }
-    if (webViewState.url.includes('https://example.com/return')) {
-        const urlValues = queryString.parseUrl(webViewState.url)
-        
-        const { token } = urlValues.query
-        if (!!token) {
-            paymentSucess(token)
-        }
-
-    }
+    
   }
   const onUrlChange = (webViewState) =>{
    
@@ -125,8 +119,9 @@ export default function OrderScreen(props) {
       return;
     }
     if (webViewState.url.includes('https://example.com/return')) {
+        clearPayPalState();
         const urlValues = queryString.parseUrl(webViewState.url)
-        console.log("my urls value", urlValues)
+        // console.log("my urls value", urlValues)
         const { token } = urlValues.query
         if (!!token) {
             paymentSucess(token)
@@ -142,37 +137,46 @@ export default function OrderScreen(props) {
 
     } catch (error) {
       console.log(error)
+      setError(error.message)
     }
   }
 
-
   
+  // if(getOrderError){
+  //   setError(getOrderError.message)
+  // }
+  // else if(payOrderError){
+  //   setError(payOrderError.message)
+  // }
+  // else if(createOrderError){
+  //   setError(createOrderError.message)
+  // }
+  // else if(deliverOrderError){
+  //   setError(deliverOrderError.message)
+  // }
+
+ 
   return (
-    <SafeAreaView style={{flex:1,backgroundColor:Assets.Colors(colorScheme).primary}}>
-      <NavBar screenName={"Order"} onPress={()=>props.navigation.goBack()}  />
-      {isLoading ? (
+    <View style={{flex:1,backgroundColor:Assets.Colors(colorScheme).primary}}>
+      <IosSafeArea />
+      <NavBar screenName={"Order"} onPress={()=>navigation.navigate("OrdersScreen")}  />
+      <ErrorModal error={error } setError={setError} />
+      {loading ? (
         <Loading />
       ) :
-      error? (
-        <View>
-
-        </View>
-      ) :
+      
       <ScrollView showsVerticalScrollIndicator={false} style={{flex:1,marginHorizontal:20,marginBottom:10}}>
         <View>
-          <Text style={styles(colorScheme).orderHeading}>{data._id}</Text>
-          <View style={styles(colorScheme).shippingValuesContainer}>
-            <Text style={styles(colorScheme).shippingValuesHeading}>Name : </Text>
-            <Text style={{color:Assets.Colors(colorScheme).textPrimary}}>{data?.user?.name}</Text>
-          </View>
-          <View style={styles().shippingValuesContainer}>
-            <Text style={styles(colorScheme).shippingValuesHeading}>Email : </Text>
-            <Text style={{color:Assets.Colors(colorScheme).textPrimary}} >{data?.user?.email}</Text>
-          </View>
-          <View style={styles().shippingValuesContainer}>
-            <Text style={styles(colorScheme).shippingValuesHeading}>Address : </Text>
-            <Text style={{color:Assets.Colors(colorScheme).textPrimary}}>{data?.shippingAddress?.address}, {data?.shippingAddress?.city}, {data?.shippingAddress?.country}, {data?.shippingAddress?.postalCode}</Text>
-          </View>
+          <Text style={styles(colorScheme).orderHeading}>#{data?._id}</Text>
+          <ShippingAddress 
+            shippingAddress={{
+                address:data?.shippingAddress?.address,
+                country:data?.shippingAddress?.country,
+                postalCode:data?.shippingAddress?.postalCode,
+                city:data?.shippingAddress?.city,
+                
+              }} 
+            />
           <View style={{backgroundColor:data?.isDelivered ? "#00b300" : "#ff6666",padding:15,borderRadius:10}}>
               {data?.isDelivered ? 
               <Text style={{fontWeight:'bold',color:'white',fontSize:16}}>Delivered</Text> :
@@ -181,68 +185,32 @@ export default function OrderScreen(props) {
             </View>
           
         </View>
-        <View style={styles(colorScheme).partition} />
+        <Partition />
         <View>
-        <Text style={styles(colorScheme).orderHeading}>Payment Method</Text>
-        <View style={styles().shippingValuesContainer}>
-          <Text style={styles(colorScheme).shippingValuesHeading}>Payment : </Text>
-          <Text style={{color:Assets.Colors(colorScheme).textPrimary,fontSize:16}}>{data?.paymentMethod}</Text>
           
-        </View>
-         
-            <View style={{backgroundColor:data?.isPaid ? "#00b300" : "#ff8080",padding:15,borderRadius:10}}>
+            <PaymentMethod paymentMethod={data?.paymentMethod} />
+            <View style={{backgroundColor:data?.isPaid ? "#00b300" : "#ff6666",padding:15,borderRadius:10}}>
               {data?.isPaid ? 
-              <Text style={{fontWeight:'bold',color:'white',fontSize:16}}>Paid</Text> :
-              <Text style={{fontWeight:'bold'}}>Not Paid</Text>
+              <View>
+
+              <Text style={{fontWeight:'bold',color:'white',fontSize:16}}>Paid</Text>
+              <Text style={{fontWeight:'bold',color:'white',fontSize:16}}>{new Date(data?.paidAt).toString().substring(0,24)}</Text>
+              <Text style={{fontWeight:'bold',color:'white',fontSize:16}}>Reference Id : {data?.paymentResult.id}</Text>
+              </View>
+                :
+              (<Text style={{fontWeight:'bold',color:'white'}}>Not Paid</Text>)
               }
             </View>
-          
-           
         </View>
-        <View style={styles(colorScheme).partition} />
-        <View>
-          <Text style={styles(colorScheme).orderHeading}>Order Items</Text>
-          <View>
-            {data?.orderItems?.map(item=>(
-              <TouchableOpacity style={styles(colorScheme).itemCard} key={item._id}>
-                <Image source={{uri:`${BASE_URL}/api/image/${item.image}`}} style={{width:60,height:60,borderRadius:10,objectFit:'contain'}} />
-                <View style={styles(colorScheme).itemCardDesc}>
-                 
-                    <Text style={{color:Assets.Colors(colorScheme).textPrimary,fontSize:16}}>{item.name}</Text>
-            
-                  <Text style={{color:Assets.Colors(colorScheme).textPrimary,fontSize:16}}>{item.qty} X {item.price} = {Number(item.qty) * Number(item.price)}</Text>
-                </View>
-              </TouchableOpacity>
-            ))}
-          </View>
-          
-        </View>
-        <View style={styles(colorScheme).partition} />
-        <View>
-          <Text style={styles(colorScheme).orderHeading}>Order Summary</Text>
-          <View>
-            <View style={styles(colorScheme).priceItems}>
-              <Text style={{color:Assets.Colors(colorScheme).textPrimary,fontSize:16}}>items</Text>
-              <Text style={{color:Assets.Colors(colorScheme).textPrimary,fontSize:16}}>{itemsPrice}</Text>
-
-            </View>
-            <View style={styles(colorScheme).priceItems}>
-              <Text style={{color:Assets.Colors(colorScheme).textPrimary,fontSize:16}}>Shipping</Text>
-              <Text style={{color:Assets.Colors(colorScheme).textPrimary,fontSize:16}}>{data?.shippingPrice}</Text>
-
-            </View>
-            <View style={styles(colorScheme).priceItems}>
-              <Text style={{color:Assets.Colors(colorScheme).textPrimary,fontSize:16}}>tax</Text>
-              <Text style={{color:Assets.Colors(colorScheme).textPrimary,fontSize:16}}>{data?.taxPrice}</Text>
-
-            </View>
-            <View style={styles(colorScheme).priceItems}>
-              <Text style={{color:Assets.Colors(colorScheme).textPrimary,fontSize:16}}>total</Text>
-              <Text style={{color:Assets.Colors(colorScheme).textPrimary,fontSize:16}}>{data?.totalPrice}</Text>
-
-            </View>
-          </View>
-        </View>
+        <Partition />
+        <OrderInfo orderItems={data?.orderItems} />
+        <Partition />
+        <OrderSummary 
+          itemsPrice={itemsPrice} 
+          shippingPrice={data?.shippingPrice} 
+          taxPrice={data?.taxPrice} 
+          totalPrice={data?.totalPrice} />
+        
         {!userInfo?.isAdmin  && !data?.isPaid && (
 
           <View style={{paddingVertical:10}}>
@@ -271,7 +239,7 @@ export default function OrderScreen(props) {
       </ScrollView>
     }
       
-    </SafeAreaView>
+    </View>
   )
 }
 
@@ -305,7 +273,6 @@ const styles = (value) => StyleSheet.create({
   itemCard:{
     flexDirection:'row',
     alignItems:'center'
-
   },
   itemCardDesc:{
     flex:1,

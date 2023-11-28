@@ -9,6 +9,8 @@ import ProductsScreen from '../../screens/Profile/ProductsScreen';
 import OrdersScreen from '../../screens/Profile/OrdersScreen';
 import LoginNavigator from './LoginNavigator';
 import { useSelector } from 'react-redux';
+import LoginScreen from '../../screens/Login/LoginScreen';
+import EditProfile from '../../screens/Profile/EditProfile';
 
 const Profile = createStackNavigator();
 
@@ -32,9 +34,10 @@ export default function ProfileNavigator(props) {
             <Profile.Screen name="UsersScreen" component={UsersScreen} />
             <Profile.Screen name="ProductsScreen" component={ProductsScreen} />
             <Profile.Screen name="OrdersScreen" component={OrdersScreen} />
+          <Profile.Screen name="EditProfileScreen" component={EditProfile} />
           </>
         ) : (
-          <Profile.Screen name="LoginNavigator" component={LoginNavigator} />
+          <Profile.Screen name="Login" component={LoginScreen} />
         )}
     </Profile.Navigator>
   )

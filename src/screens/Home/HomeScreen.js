@@ -1,4 +1,4 @@
-import { FlatList, TouchableWithoutFeedback,StyleSheet,Dimensions, ScrollView, ActivityIndicator } from 'react-native'
+import { FlatList, TouchableWithoutFeedback,StyleSheet,Dimensions, ScrollView, ActivityIndicator, TextInput, TouchableOpacity, Platform } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { Button,  Input, Rating, Tile } from 'react-native-elements';
 import SearchBar from '../../components/SearchBar';
@@ -24,14 +24,16 @@ export default function HomeScreen({navigation}) {
     const colorScheme = useSelector((state)=>state.theme.colorScheme)
 
     const {userInfo} = useSelector((state)=>state.auth);
+    const [keyword,setKeyword] = useState("")
 
     
+     
 
-
-    const {data:products,isLoading,error} = useGetProductsQuery();
+    const {data:products,isLoading,error,refetch} = useGetProductsQuery({keyword});
     
 
     const cart = useSelector(state=>state.cart);
+    
 
 
  
@@ -42,11 +44,6 @@ export default function HomeScreen({navigation}) {
 
     useEffect(()=>{
        
-      
-        
-        
-        
-
     },[userInfo])
 
 
@@ -95,14 +92,28 @@ export default function HomeScreen({navigation}) {
 
         <View row centerV  >
                     <View style={{flex:3}} >
-                        <SearchBar />
+                    <TextInput  
+
+                        onSubmitEditing={()=>refetch()}
+                        value={keyword}
+                        onChangeText={(text)=>setKeyword(text)}
+                        placeholder='Search Products...'
+                        style={{
+                        marginVertical:5,
+                        backgroundColor:'#f2f2f2',
+                        borderRadius:50,
+                        paddingLeft:20,
+                        padding:Platform.OS == 'ios' ? 10 : 5,
+                        borderWidth: colorScheme=='dark'? 0 : 1,
+                        borderColor:Assets.Colors(colorScheme).textPrimary
+                        }} /> 
                     </View>
                     <View flex  row spread style={{justifyContent:'space-around'}}> 
 
-                        <FrontAwesome onPress={()=>navigation.navigate('Profile')} name="user" size={30} color={Assets.Colors(colorScheme).textPrimary} />
-                        <View>
-                            <Ionicons onPress={()=>navigation.navigate('Cart')} name='cart' size={30} color={Assets.Colors(colorScheme).textPrimary} />
-                            {/* <View style={{
+                        <FrontAwesome onPress={()=>navigation.navigate('Profile',{screen:'ProfileScreen'})} name="user" size={30} color={Assets.Colors(colorScheme).textPrimary} />
+                        <TouchableOpacity onPress={()=>navigation.navigate('Cart')}>
+                            <Ionicons  name='cart' size={30} color={Assets.Colors(colorScheme).textPrimary} />
+                            <View style={{
                                     position:'absolute',
                                     top:0,
                                     right:0,
@@ -111,12 +122,12 @@ export default function HomeScreen({navigation}) {
                                     flexDirection:'row',
                                     justifyContent:'center',
                                     alignItems:'center',
-                                    backgroundColor:'red'
+                                    backgroundColor:Assets.Colors(colorScheme).primary
                                 }}>
-                                    <Text>{cart.cartItems.reduce((a,c)=>a+c.qty,0)}</Text>
-                                </View> */}
+                                    <Text style={{color:Assets.Colors(colorScheme).textPrimary}}>{cart.cartItems.reduce((a,c)=>a+c.qty,0)}</Text>
+                                </View>
 
-                        </View>
+                        </TouchableOpacity>
                     </View>
                 </View>
         {isLoading ? (<ActivityIndicator size={'large'} color={'#333333'} />) : error? (

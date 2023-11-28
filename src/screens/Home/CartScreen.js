@@ -9,6 +9,8 @@ import Assets from '../../assets/Theme'
 import Button from '../../components/Button'
 import useCart from '../../hooks/useCart'
 import { addToCart, loadInitialState,removeFromCart } from '../../slices/cartSlice'
+import { SafeAreaView } from 'react-native-safe-area-context'
+import IosSafeArea from '../../components/IosSafeArea'
 
 export default function CartScreen({navigation}) {
   
@@ -74,6 +76,7 @@ export default function CartScreen({navigation}) {
 
   return (
     <View style={{flex:1}}>
+       <IosSafeArea />
       <NavBar screenName={'Cart'} onPress={()=>navigation.goBack()} />
       <View style={{flex:1,backgroundColor:Assets.Colors(colorScheme).primary}}>
         {loading ? (
@@ -161,7 +164,7 @@ const styles = (value) => StyleSheet.create({
   },
   empty_message:{
     color:Assets.Colors(value).textPrimary,
-    fontSize:30,
+    fontSize:24,
     textAlign:'center'
   },
   empty_redirect:{

@@ -36,7 +36,7 @@ export default function ProductScreen(props) {
   const {
     data:item,
     isLoading,
-    error,
+    error:getProductsError,
     refetch
   } = useGetProductDetailQuery(params?.id);
   const dispatch = useDispatch();
@@ -47,7 +47,10 @@ export default function ProductScreen(props) {
   const [openModal,setOpenModal] = useState(false);
   const [openRatingDialog,setOpenRatingDialog] = useState(false)
   const [addedToCart,setAddedToCart] = useState("");
-  
+  const [buttonText,setButtonText] = useState("Add to Cart");
+  const [reviewError,setReviewError] = useState("")
+  const [error,setError] = useState("")
+
   // const item = props.route?.params?.item;
 
   const [createReview,{isLoading:loadingProductReview,}]  = useCreateReviewMutation()
@@ -72,6 +75,10 @@ export default function ProductScreen(props) {
     try {
       dispatch(addToCart({...item,qty}));
       setAddedToCart("Added To Cart")
+      setButtonText("Added to Cart");
+      setTimeout(()=>{
+        setButtonText("Add to Cart")
+      },2000)
     } catch (error) {
       console.log(error)
     }
@@ -101,17 +108,23 @@ export default function ProductScreen(props) {
 
   const reviewSubmit = async() =>{
     try{
-      const review = {
-        rating,
-        comment,
-        productId:item._id
+      if(rating.length >0 && comment.length > 0){
+
+        const review = {
+          rating,
+          comment,
+          productId:item._id
+        }
+        console.log(review)
+        await createReview(review);
+        refetch();
       }
-      console.log(review)
-      await createReview(review);
-      refetch();
+      else{
+        throw new Error("rating or comment cannot be empty")
+      }
     }
     catch(err){
-      console.log(err.message)
+      setReviewError(err.message)
     }
     // Connected it with smart plug and bulb for controlling with voice commands
    
@@ -120,7 +133,7 @@ export default function ProductScreen(props) {
   const checkIfCommented = () =>{
   
     const commentedAlready = item.reviews.find(review=>review.user == userInfo._id);
-    console.log({commentedAlready})
+   
     if(commentedAlready){
       return true;
     }
@@ -132,7 +145,7 @@ export default function ProductScreen(props) {
  
  
   return (
-    <View style={{flex:1}}>
+    <View edges={'top'}  style={{flex:1}}>
      
       {isLoading ? (
         <Loading />
@@ -143,11 +156,12 @@ export default function ProductScreen(props) {
       ) : (
         <View style={{flex:1}}>
            
-          <View style={{position:'absolute',zIndex:10,left:20,top:20}}>
+          <View style={{position:'absolute',zIndex:10,left:20,top:Platform.OS=="ios" ? 70 : 20,}}>
             <Ionicons name='arrow-back' size={30} onPress={()=>props.navigation.goBack()} />
     
           </View>
            <StatusBar theme={'black'}  />
+         
            <View style={{flex:1}}>
            
           
@@ -239,14 +253,14 @@ export default function ProductScreen(props) {
               
             
                 (<View>
-                  {item.reviews.map(review=>(
+                  {item.reviews.map((review,index)=>(
                   
-                      <View style={styles(colorScheme).review_main}>
+                      <View key={index} style={styles(colorScheme).review_main}>
                           <View style={styles(colorScheme).review_content}>
 
                             <Text style={{fontSize:18,fontWeight:'bold',color:Assets.Colors(colorScheme).textPrimary}}>{review.name}</Text>
                             <Rating value={review.rating}  />
-                            {/* <Text>{review.rating}</Text> */}
+                            
                           </View>
                           <View>
                             <Text style={{fontSize:16,color:Assets.Colors(colorScheme).textPrimary}}>{review.comment}</Text>
@@ -257,7 +271,7 @@ export default function ProductScreen(props) {
                 </View>) :
                 (
                   <View>
-                    <Text>No comments yet</Text>
+                    <Text style={{color:Assets.Colors(colorScheme).textPrimary}}>No comments yet</Text>
                   </View>
                 )
               
@@ -277,21 +291,37 @@ export default function ProductScreen(props) {
                         borderRadius:10,
                         flexDirection:'column',
                         justifyContent:'center',
+                        backgroundColor:Assets.Colors(colorScheme).secondary
                         }}>
-                          <View style={{flexDirection:'row',justifyContent:'center',alignItems:'center',borderBottomWidth:1,padding:20}}>
-                            <Text style={{fontWeight:'bold',fontSize:18}}>Write a Review</Text>
+                          <View style={{
+                            flexDirection:'row',
+                            justifyContent:'center',
+                            alignItems:'center',
+                            borderBottomWidth:1,
+                            padding:20,
+                            borderColor:Assets.Colors(colorScheme).textPrimary
+                            }}>
+                            <Text style={{fontWeight:'bold',fontSize:18,color:Assets.Colors(colorScheme).textPrimary}}>
+                              Write a Review
+                              </Text>
+                              <ErrorModal error={reviewError} setError={setReviewError} />
                           
                           </View>
                           <View style={{padding:15}}>
 
-                         
-                            <View style={{flexDirection:'row',alignItems:'center',borderWidth:1}}>
-                              {[...Array(5).keys()].map((item)=>(
+                              <View style={{paddingVertical:5}}>
+
+                              <Text style={{color:Assets.Colors(colorScheme).textPrimary}} >Select rating</Text>
+                              </View>
+                            <View style={{flexDirection:'row',alignItems:'center',borderWidth:1, borderColor:Assets.Colors(colorScheme).textPrimary}}>
+                              {[...Array(5).keys()].map((item,index)=>(
                                 <TouchableOpacity 
+                                key={index}
                                   style={{
                                     flex:1,
                                     padding:5,
                                     borderRightWidth:1,
+                                    borderColor:Assets.Colors(colorScheme).textPrimary,
                                     flexDirection:'row',
                                     justifyContent:'center',
                                     alignItems:'center',
@@ -304,8 +334,9 @@ export default function ProductScreen(props) {
                               ))}
                               
                             </View>
+                           
                             <View style={{paddingVertical:10}}>
-                              <TextInput placeholder='enter comment' multiline style={{borderWidth:item+1==5 ? 0: 1,borderRadius:10,height:100,padding:10}} value={comment} onChangeText={(text)=>setComment(text)}/>
+                              <TextInput placeholder='enter comment' placeholderTextColor={Assets.Colors(colorScheme).textPrimary} multiline style={{borderWidth:1, borderColor:Assets.Colors(colorScheme).textPrimary,borderRadius:10,height:100,padding:10}} value={comment} onChangeText={(text)=>setComment(text)}/>
                             </View>
                             <Button title='submit review' onPress={reviewSubmit} />
                           </View>
@@ -318,7 +349,11 @@ export default function ProductScreen(props) {
           </ScrollView>
           </View>
           <View style={{flex:0.1,backgroundColor:Assets.Colors(colorScheme).primary}}>
-            <ActionButton onPress={addToCartHandler} buttonText={"Add to Cart"} />
+            <ActionButton 
+              onPress={addToCartHandler} 
+              buttonText={buttonText} 
+              buttonStyle={{backgroundColor:buttonText=="Add to Cart" ? Assets.Colors(colorScheme).textPrimary : "#009933"}}
+              />
           </View>
         
         </View>

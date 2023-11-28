@@ -1,14 +1,23 @@
-import { TouchableOpacity,StyleSheet, Modal, Alert,Button } from 'react-native'
+import { TouchableOpacity,StyleSheet, Modal, Alert, ScrollView } from 'react-native'
 import {View,Text} from 'react-native-ui-lib'
 import React, { useState } from 'react'
 import StatuBar from '../../components/StatuBar'
 import NavBar from '../../components/NavBar'
 import { useDispatch, useSelector } from 'react-redux'
 import Assets from '../../assets/Theme'
-// import Button from '../../components/Button'
+import Button from '../../components/Button'
 import { useCreateOrderMutation } from '../../slices/ordersApiSlice'
 import { useNavigation } from '@react-navigation/native'
 import { clearCartItems } from '../../slices/cartSlice'
+import IosSafeArea from '../../components/IosSafeArea'
+import ShippingAddress from '../../components/OrderDetails/ShippingAddress'
+import OrderInfo from '../../components/OrderDetails/OrderInfo'
+import OrderSummary from '../../components/OrderDetails/OrderSummary'
+import Partition from '../../components/Partition'
+import PaymentMethod from '../../components/OrderDetails/PaymentMethod'
+import ErrorModal from '../../components/ErrorModal'
+import { logout } from '../../slices/authSlice'
+
 
 
 export default function PlaceOrderScreen(props) {
@@ -16,9 +25,9 @@ export default function PlaceOrderScreen(props) {
   const {cartItems,shippingAddress,paymentMethod,shippingPrice,itemsPrice,taxPrice,totalPrice} = useSelector(state=>state.cart)
   const dispatch = useDispatch();
   const navigation = useNavigation();
-  const [createOrder,{isLoading,error,isError},] = useCreateOrderMutation();
+  const [createOrder,{isLoading,error:createOrderError,isError},] = useCreateOrderMutation();
  
-
+  const [error,setError] = useState("");
 
   const placeOrderHandler = async()=>{
     try {
@@ -32,45 +41,51 @@ export default function PlaceOrderScreen(props) {
         totalPrice
 
       }).unwrap();
-      console.log(result);
       dispatch(clearCartItems());
-      navigation.navigate("OrderScreen",{orderId:result._id});
+     
+      navigation.navigate("Profile",{screen:"OrderScreen",params :{orderId:result._id}});
     } catch (err) {
-      console.log(err)
+      
+      if(err.data?.message =="Not authorized, no token"){
+        setError(err.data?.message);
+        setTimeout(()=>{
+          dispatch(logout());
+          navigation.navigate("Profile",{screen:'Login'});
+        },2000)
+        
+      }
+
     }
   }
 
-  console.log({isLoading,error,isError})
+ 
   
 
 
  
   return (
     <View flex >
-      <NavBar screenName={'Order'} onPress={()=>navigation.goBack()} />
-      <View margin-20>
-
-    
-      <View style={styles(colorScheme).total_section}>
-                      
-        <View  row spread paddingT-5>
-          <Text style={styles(colorScheme).total_value_heading} >Subtotal</Text>
-          <Text style={styles(colorScheme).total_value}>${itemsPrice}</Text>
-        </View>
-        
-        <View row spread paddingT-5>
-          <Text style={styles(colorScheme).total_value_heading}>tax</Text>
-          <Text style={styles(colorScheme).total_value}>${taxPrice}</Text>
-        </View>
-        <View row spread paddingT-5>
-          <Text style={styles(colorScheme).total_value_heading}>total</Text>
-          <Text style={styles(colorScheme).total_value} >${totalPrice}</Text>
-        </View>
+      <IosSafeArea />
+      <NavBar screenName={'Place Order'} onPress={()=>navigation.goBack()} />
       
-    </View>
-    <Button onPress={placeOrderHandler} title="order" />
-    {/* <Button onPress={placeOrderHandler} title={"Place Order"} style={{marginVertical:20}}  /> */}
-    </View>     
+      <ErrorModal error={error} setError={setError} />
+      <View style={{zIndex:99,position:'relative',flex:1,paddingHorizontal:20,backgroundColor:Assets.Colors(colorScheme).primary}}>
+        <ScrollView showsVerticalScrollIndicator={false} style={{flex:1,marginTop:10}}>
+
+        
+          <ShippingAddress shippingAddress={shippingAddress}/>
+          <Partition />
+          <OrderInfo orderItems={cartItems} />
+          <Partition />
+          <PaymentMethod paymentMethod={paymentMethod}  />
+          <Partition />
+          <OrderSummary shippingPrice={shippingPrice} itemsPrice={itemsPrice}  taxPrice={taxPrice} totalPrice={totalPrice} />
+        </ScrollView>
+        <View >
+
+          <Button onPress={placeOrderHandler} title={"Place Order"} style={{marginVertical:20}}  />
+        </View>    
+    </View> 
    
     </View>
   )
