@@ -2,8 +2,11 @@ import base64 from 'base-64';
 let baseUrl = "https://api-m.sandbox.paypal.com"
 
 
-let clientId = "Ae__HFQHQA-KJ5le17JEsgURIC2ZR8jjb6zLck6SSzNSJTBE4p17DFEKXSIeXE9gZ1whknlS6sQqsLpl";
-let secretKey = "EDuSq3VvXSjjaQ1AzNO441AeewlcePiE2M7PexybA9gGJiomDUA9xusayO2KSItYv9kimtqnlgHGkzNv";
+
+// let clientId = "Ae__HFQHQA-KJ5le17JEsgURIC2ZR8jjb6zLck6SSzNSJTBE4p17DFEKXSIeXE9gZ1whknlS6sQqsLpl";
+// let secretKey = "EDuSq3VvXSjjaQ1AzNO441AeewlcePiE2M7PexybA9gGJiomDUA9xusayO2KSItYv9kimtqnlgHGkzNv";
+let clientId = "AWqC5eacGBCDXP78GtjLDsHUwTxOnA5H1_GtRW_J1G5JgSDprBugjnRV86Ayks-mCvOJH7L4PBSxowiA";
+let secretKey = "EDlrs0j5BdWZNxqEj8Ksd1KGn1_HmFcwy0e8p6orUMRBJZNrI4YSYPh97kHs6KYYF66aoLR1Rtxx-mKR";
 
 const generateToken = () =>{
     const header = new Headers();

@@ -9,7 +9,7 @@ import Assets from '../../assets/Theme';
 import {useParams} from 'react-router'
 import { useDispatch, useSelector } from 'react-redux';
 import {addItem,addToCart,loadInitialState} from '../../slices/cartSlice';
-import {useGetProductDetailQuery,useCreateReviewMutation} from '../../slices/productsApiSlice';
+import {useGetProductDetailQuery,useCreateReviewMutation,useRemoveReviewMutation} from '../../slices/productsApiSlice';
 import { useRoute } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { BASE_URL } from '../../redux/constants/constants';
@@ -18,6 +18,7 @@ import Rating from '../../components/Rating';
 import { Incubator, PanningProvider, Picker,Dialog } from 'react-native-ui-lib';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5'
 import AntDesign from 'react-native-vector-icons/AntDesign';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 // import Dialog from '../../components/Dialog';
 import Modal from '../../components/Modal';
 import Loading from '../../components/Loading';
@@ -32,6 +33,7 @@ export default function ProductScreen(props) {
   const {params} = useRoute();
   const colorScheme = useSelector((state)=>state.theme.colorScheme)
   const userInfo = useSelector((state)=>state.auth.userInfo)
+  const cart = useSelector((state)=>state.cart)
   // const {cartItems,itemsPrice,paymentMethod,shippingAddress,shippingPrice,taxPrice,totalPrice}  = useSelector(state=>state.cart)
   const {
     data:item,
@@ -53,7 +55,8 @@ export default function ProductScreen(props) {
 
   // const item = props.route?.params?.item;
 
-  const [createReview,{isLoading:loadingProductReview,}]  = useCreateReviewMutation()
+  const [createReview,{isLoading:createReviewLoading,error:createReviewError}]  = useCreateReviewMutation()
+  const [removeReview,{isLoading:removeReviewLoading,error:removeReviewError}] = useRemoveReviewMutation()
 
   
 
@@ -61,15 +64,6 @@ export default function ProductScreen(props) {
     
   },[params.id])
 
-
-
-  const clearlocal = async()=>{
-    try {
-        await AsyncStorage.removeItem('cartItems');
-    } catch (error) {
-      console.log(error);
-    }
-  }
 
   const addToCartHandler = async()=>{
     try {
@@ -108,18 +102,20 @@ export default function ProductScreen(props) {
 
   const reviewSubmit = async() =>{
     try{
-      if(rating.length >0 && comment.length > 0){
+      
+      if(rating >0 && comment.length > 0){
 
         const review = {
           rating,
           comment,
           productId:item._id
         }
-        console.log(review)
         await createReview(review);
+        setOpenRatingDialog(false);
         refetch();
       }
       else{
+        
         throw new Error("rating or comment cannot be empty")
       }
     }
@@ -142,7 +138,18 @@ export default function ProductScreen(props) {
     }
   }
 
- 
+
+  const deleteReview = async() =>{
+    try {
+      console.log("delete id")
+      await removeReview(item._id);
+      refetch();
+    } catch (error) {
+      console.log(error)
+      setError(error.message)
+    }
+  }
+
  
   return (
     <View edges={'top'}  style={{flex:1}}>
@@ -156,8 +163,33 @@ export default function ProductScreen(props) {
       ) : (
         <View style={{flex:1}}>
            
-          <View style={{position:'absolute',zIndex:10,left:20,top:Platform.OS=="ios" ? 70 : 20,}}>
+          <View style={{
+            position:'absolute',
+            zIndex:10,
+            left:20,
+            top:Platform.OS=="ios" ? 70 : 20,
+            flexDirection:'row',
+            justifyContent:'space-between',
+            alignItems:'center',
+            width:'90%'
+            }}>
             <Ionicons name='arrow-back' size={30} onPress={()=>props.navigation.goBack()} />
+            <TouchableOpacity onPress={()=>props.navigation.navigate('Cart')}>
+                <Ionicons  name='cart' size={30} color={Assets.Colors(colorScheme).textPrimary} />
+                <View style={{
+                      position:'absolute',
+                      top:0,
+                      right:0,
+                      width:17,height:17,
+                      borderRadius:50,
+                      flexDirection:'row',
+                      justifyContent:'center',
+                      alignItems:'center',
+                      backgroundColor:Assets.Colors(colorScheme).primary
+                  }}>
+                      <Text style={{color:Assets.Colors(colorScheme).textPrimary}}>{cart.cartItems.reduce((a,c)=>a+c.qty,0)}</Text>
+                  </View>
+            </TouchableOpacity>
     
           </View>
            <StatusBar theme={'black'}  />
@@ -257,9 +289,13 @@ export default function ProductScreen(props) {
                   
                       <View key={index} style={styles(colorScheme).review_main}>
                           <View style={styles(colorScheme).review_content}>
-
+                            
                             <Text style={{fontSize:18,fontWeight:'bold',color:Assets.Colors(colorScheme).textPrimary}}>{review.name}</Text>
-                            <Rating value={review.rating}  />
+                            <View style={{flexDirection:'row',alignItems:'center'}}>
+
+                              <Rating value={review.rating}  />
+                              {userInfo._id===review.user && <TouchableOpacity onPress={deleteReview} style={{paddingLeft:10}}><MaterialCommunityIcons name='delete-outline' color={'red'} size={20} /></TouchableOpacity>}
+                            </View>
                             
                           </View>
                           <View>
@@ -336,7 +372,20 @@ export default function ProductScreen(props) {
                             </View>
                            
                             <View style={{paddingVertical:10}}>
-                              <TextInput placeholder='enter comment' placeholderTextColor={Assets.Colors(colorScheme).textPrimary} multiline style={{borderWidth:1, borderColor:Assets.Colors(colorScheme).textPrimary,borderRadius:10,height:100,padding:10}} value={comment} onChangeText={(text)=>setComment(text)}/>
+                              <TextInput 
+                                placeholder='enter comment' 
+                                placeholderTextColor={Assets.Colors(colorScheme).textPrimary} 
+                                multiline 
+                                style={{
+                                    borderWidth:1, 
+                                    borderColor:Assets.Colors(colorScheme).textPrimary,
+                                    borderRadius:10,
+                                    height:100,
+                                    padding:10,
+                                    color:Assets.Colors(colorScheme).textPrimary
+                                  }} 
+                                value={comment} 
+                                onChangeText={(text)=>setComment(text)}/>
                             </View>
                             <Button title='submit review' onPress={reviewSubmit} />
                           </View>

@@ -98,14 +98,17 @@ export default function HomeScreen({navigation}) {
                         value={keyword}
                         onChangeText={(text)=>setKeyword(text)}
                         placeholder='Search Products...'
+                        placeholderTextColor={Assets.Colors(colorScheme).textPrimary}
                         style={{
-                        marginVertical:5,
-                        backgroundColor:'#f2f2f2',
-                        borderRadius:50,
-                        paddingLeft:20,
-                        padding:Platform.OS == 'ios' ? 10 : 5,
-                        borderWidth: colorScheme=='dark'? 0 : 1,
-                        borderColor:Assets.Colors(colorScheme).textPrimary
+                            marginVertical:5,
+                            backgroundColor:'#f2f2f2',
+                            borderRadius:50,
+                            paddingLeft:20,
+                            padding:Platform.OS == 'ios' ? 10 : 5,
+                            borderWidth: colorScheme=='dark'? 0 : 1,
+                            borderColor:Assets.Colors(colorScheme).textPrimary,
+                            color:Assets.Colors(colorScheme).textPrimary
+
                         }} /> 
                     </View>
                     <View flex  row spread style={{justifyContent:'space-around'}}> 

@@ -75,7 +75,7 @@ export default function OrderScreen(props) {
       const result = await createPaypalOrder(token,orderParams);
   
       setAccessToken(token);
-      setLoading(false)
+  
 
       if(!!result?.links){
    
@@ -155,13 +155,13 @@ export default function OrderScreen(props) {
   //   setError(deliverOrderError.message)
   // }
 
- 
+ console.log(loading)
   return (
     <View style={{flex:1,backgroundColor:Assets.Colors(colorScheme).primary}}>
       <IosSafeArea />
       <NavBar screenName={"Order"} onPress={()=>navigation.navigate("OrdersScreen")}  />
       <ErrorModal error={error } setError={setError} />
-      {loading ? (
+      {(isLoading || createOrderLoading || payOrderLoading || deliverOrderLoading) ? (
         <Loading />
       ) :
       

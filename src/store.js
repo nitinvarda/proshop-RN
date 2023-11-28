@@ -31,7 +31,8 @@ const store  = configureStore({
         serializableCheck:{
             ignoreActions:[FLUSH,REHYDRATE,PAUSE,PERSIST,PURGE,REGISTER]
         }
-    }).concat(apiSlice.middleware),devTools:true
+    }).concat(apiSlice.middleware),
+    devTools:true
 })
 
 export default store;
