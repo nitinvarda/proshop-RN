@@ -1,4 +1,4 @@
-import { FlatList, TouchableWithoutFeedback,StyleSheet,Dimensions, ScrollView, ActivityIndicator, TextInput, TouchableOpacity, Platform } from 'react-native'
+import { FlatList, TouchableWithoutFeedback,StyleSheet,Dimensions, ScrollView, ActivityIndicator, TextInput, TouchableOpacity, Platform, StatusBar } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { Button,  Input, Rating, Tile } from 'react-native-elements';
 import SearchBar from '../../components/SearchBar';
@@ -14,6 +14,7 @@ import {useGetProductsQuery} from '../../slices/productsApiSlice';
 import useAuth from '../../hooks/useAuth';
 import { load, setCredentials } from '../../slices/authSlice';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import IosSafeArea from '../../components/IosSafeArea';
  
 
 const windowWidth = Dimensions.get('window').width;
@@ -86,19 +87,19 @@ export default function HomeScreen({navigation}) {
         </Card>
     )
     }
-
+  
   return (
-    <SafeAreaView  edges={["top"]} style={globalStyles(colorScheme).mainView}>
-
+    <View  style={[globalStyles(colorScheme).mainView,{paddingTop:10}]}>
+        <StatusBar backgroundColor={Assets.Colors(colorScheme).secondary} barStyle={colorScheme =='dark' ? 'light-content' :'dark-content'} />
+        <IosSafeArea />
         <View row centerV  >
                     <View style={{flex:3}} >
                     <TextInput  
-
                         onSubmitEditing={()=>refetch()}
                         value={keyword}
                         onChangeText={(text)=>setKeyword(text)}
                         placeholder='Search Products...'
-                        placeholderTextColor={Assets.Colors(colorScheme).textPrimary}
+                        placeholderTextColor={'#333333'}
                         style={{
                             marginVertical:5,
                             backgroundColor:'#f2f2f2',
@@ -107,7 +108,7 @@ export default function HomeScreen({navigation}) {
                             padding:Platform.OS == 'ios' ? 10 : 5,
                             borderWidth: colorScheme=='dark'? 0 : 1,
                             borderColor:Assets.Colors(colorScheme).textPrimary,
-                            color:Assets.Colors(colorScheme).textPrimary
+                            color:'#333333'
 
                         }} /> 
                     </View>
@@ -149,7 +150,7 @@ export default function HomeScreen({navigation}) {
         ) }
 
 
-    </SafeAreaView>
+    </View>
   )
 }
 

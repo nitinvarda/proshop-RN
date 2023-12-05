@@ -155,7 +155,7 @@ export default function OrderScreen(props) {
   //   setError(deliverOrderError.message)
   // }
 
- console.log(loading)
+
   return (
     <View style={{flex:1,backgroundColor:Assets.Colors(colorScheme).primary}}>
       <IosSafeArea />
@@ -179,7 +179,12 @@ export default function OrderScreen(props) {
             />
           <View style={{backgroundColor:data?.isDelivered ? "#00b300" : "#ff6666",padding:15,borderRadius:10}}>
               {data?.isDelivered ? 
-              <Text style={{fontWeight:'bold',color:'white',fontSize:16}}>Delivered</Text> :
+              <View>
+                {console.log(data)}
+              <Text style={{fontWeight:'bold',color:'white',fontSize:16}}>Delivered</Text>
+              <Text style={{fontWeight:'bold',color:'white',fontSize:16}}>{new Date(data?.deliveredAt).toString().substring(0,24)}</Text>
+              
+              </View> :
               <Text style={{fontWeight:'bold',color:'white',fontSize:16}}>Not Delivered</Text>
               }
             </View>

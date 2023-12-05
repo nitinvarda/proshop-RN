@@ -5,7 +5,7 @@ import NavBar from '../../components/NavBar'
 import Button from '../../components/Button'
 import { useDispatch, useSelector } from 'react-redux'
 import Assets from '../../assets/Theme'
-import { useLoginMutation } from '../../slices/usersApiSlice'
+import { useLoginMutation,useRegisterMutation } from '../../slices/usersApiSlice'
 import { setCredentials } from '../../slices/authSlice'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import ErrorModal from '../../components/ErrorModal'
@@ -24,6 +24,7 @@ export default function LoginScreen(props) {
 
 
   const [login]  = useLoginMutation();
+  const [register] = useRegisterMutation();
 
   
 
@@ -52,11 +53,15 @@ export default function LoginScreen(props) {
     try {
       
       if(email.length > 0 && password.length >0){
+        const res = await register({name:userName,email,password}).unwrap();
+      
+        dispatch(setCredentials({user:res}));
       }
       else{
         throw new Error("Email or password cannot be empty")
       }
     } catch (error) {
+      console.log(error)
       setError(error.message)
     }
 
@@ -84,11 +89,19 @@ export default function LoginScreen(props) {
           <TextInput style={styles(colorScheme).textfield} secureTextEntry={true} value={password} onChangeText={(text)=>setPassword(text)} />
         </View> 
         <View>
-         
+         {loginView ? (
           <TouchableOpacity onPress={()=>setLoginView(!loginView)}>
             
-            <Text style={styles(colorScheme).links}>create account</Text>
+          <Text style={styles(colorScheme).links}>create account</Text>
+        </TouchableOpacity>
+         ) : (
+          <TouchableOpacity onPress={()=>setLoginView(!loginView)}>
+            
+            <Text style={styles(colorScheme).links}>login here</Text>
           </TouchableOpacity>
+         )}
+
+          
         </View>
         <View marginT-50>
           <Button title={loginView ? 'Login' : 'Sign up'} onPress={loginView ? loginUser : signupUser} />

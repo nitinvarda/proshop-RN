@@ -175,7 +175,7 @@ export default function ProductScreen(props) {
             }}>
             <Ionicons name='arrow-back' size={30} onPress={()=>props.navigation.goBack()} />
             <TouchableOpacity onPress={()=>props.navigation.navigate('Cart')}>
-                <Ionicons  name='cart' size={30} color={Assets.Colors(colorScheme).textPrimary} />
+                <Ionicons  name='cart' size={30}  />
                 <View style={{
                       position:'absolute',
                       top:0,
@@ -298,6 +298,9 @@ export default function ProductScreen(props) {
                             </View>
                             
                           </View>
+                          <View style={{flexDirection:'row',justifyContent:'flex-end'}}>
+                            <Text style={{color:Assets.Colors(colorScheme).textPrimary}}>{new Date(review.createdAt).toString().substring(0,15)}</Text>
+                            </View>
                           <View>
                             <Text style={{fontSize:16,color:Assets.Colors(colorScheme).textPrimary}}>{review.comment}</Text>
                           </View>

@@ -128,24 +128,24 @@ export default function ProfileScreen({navigation}) {
                   sectionHeader={
                     <View style={styles(colorScheme).settings}>
                       <Text style={[styles(colorScheme).settings_heading,{paddingVertical:5}]}>Admin</Text>
-                      <AntDesign name={openAdminOptions ? 'up' :'down'}  size={20}/>
+                      <AntDesign name={openAdminOptions ? 'up' :'down'} color={Assets.Colors(colorScheme).textPrimary}  size={20}/>
                     </View>
                   }
                   
                   >
                 <View style={{paddingHorizontal:20,borderBottomWidth:1}}>
                   <TouchableOpacity onPress={()=>navigation.navigate("OrderListScreen")} >
-                    <Text style={{paddingVertical:5,fontSize:18}}>All orders</Text>
+                    <Text style={{paddingVertical:5,fontSize:18,color:Assets.Colors(colorScheme).textPrimary}}>All orders</Text>
                     
                   </TouchableOpacity>
-                  <TouchableOpacity onPress={()=>navigation.navigate("UserList")}>
+                  {/* <TouchableOpacity onPress={()=>navigation.navigate("UserList")}>
                     <Text style={{paddingVertical:5,fontSize:18}}>All users</Text>
 
                   </TouchableOpacity>
                   <TouchableOpacity onPress={()=>navigation.navigate("ProductList")}>
                   <Text style={{paddingVertical:5,fontSize:18}}>All products</Text>
 
-                  </TouchableOpacity>
+                  </TouchableOpacity> */}
                 </View>
 
                 </ExpandableSection>
