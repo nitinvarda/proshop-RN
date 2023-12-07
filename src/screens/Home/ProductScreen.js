@@ -274,7 +274,7 @@ export default function ProductScreen(props) {
                 <View style={{flexDirection:'row',justifyContent:'space-between',alignItems:'center'}}>
 
                   <Text style={styles(colorScheme).review_heading}>Reviews</Text>
-                  {!checkIfCommented() && (
+                  {Object.keys(userInfo).length > 0 && !checkIfCommented() && (
                   <TouchableOpacity onPress={()=>setOpenRatingDialog(!openRatingDialog)}>
 
                   <AntDesign name='plus' size={20} color={Assets.Colors(colorScheme).textPrimary} />

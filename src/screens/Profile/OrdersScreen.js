@@ -29,9 +29,8 @@ export default function OrdersScreen(props) {
       <NavBar onPress={()=>navigation.navigate("HomeNav",{screen:"Home"})} screenName={'Orders'} />
       <View style={{flex:1}}>
         {data.map((order)=>(
-
-         
             <ExpandableSection
+            key={order._id}
           
             expanded={expandItem==order._id}
             sectionHeader={

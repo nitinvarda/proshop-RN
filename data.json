@@ -1,0 +1,108 @@
+[
+    {
+        "rating": 4,
+        "numReviews": 1,
+        "price": 89.99,
+        "countInStock": 10,
+        "name": "Airpods Wireless Bluetooth Headphones",
+        "user": "5fc65a04c7d42e3ce8a66565",
+        "image": "8878cc214fc6ccc594723448336e0b86.jpg",
+        "brand": "Apple",
+        "category": "Electronics",
+        "description": "Bluetooth technology lets you connect it with compatible devices wirelessly High-quality AAC audio offers immersive listening experience Built-in microphone allows you to take calls while working",
+        "reviews": [
+            {
+                "name": "john Doe",
+                "rating": 4,
+                "comment": "Very Good",
+                "user": "5fc6825409b8521f44edde44",
+                "createdAt": "2020-12-01T19:14:21.357Z",
+                "updatedAt": "2020-12-01T19:14:21.357Z"
+            }
+        ]
+    },
+    {
+        "rating": 4,
+        "numReviews": 1,
+        "price": 599.99,
+        "countInStock": 7,
+        "name": "iPhone 11 Pro 256GB Memory",
+        "user": "5fc65a04c7d42e3ce8a66565",
+        "image": "1225b53b37706d0dc15b00e077e016bc.jpg",
+        "brand": "Apple",
+        "category": "Electronics",
+        "description": "Introducing the iPhone 11 Pro. A transformative triple-camera system that adds tons of capability without complexity. An unprecedented leap in battery life",
+        "reviews": [
+            {
+                "_id": "65658712cb2b931e3749cdf4",
+                "name": "Varda",
+                "rating": 4,
+                "comment": "Worth It",
+                "user": "6532180fef7ea7530d0a568d",
+                "createdAt": "2023-11-28T06:22:10.999Z",
+                "updatedAt": "2023-11-28T06:22:10.999Z"
+            }
+        ]
+    },
+    {
+        "rating": 0,
+        "numReviews": 0,
+        "price": 929.99,
+        "countInStock": 5,
+        "name": "Cannon EOS 80D DSLR Camera",
+        "user": "5fc65a04c7d42e3ce8a66565",
+        "image": "ecb550424a02c519f8869c792b1c7ac4.jpg",
+        "brand": "Cannon",
+        "category": "Electronics",
+        "description": "Characterized by versatile imaging specs, the Canon EOS 80D further clarifies itself using a pair of robust focusing systems and an intuitive design",
+        "reviews": []
+    },
+    {
+        "rating": 0,
+        "numReviews": 0,
+        "price": 399.99,
+        "countInStock": 11,
+        "name": "Sony Playstation 4 Pro White Version",
+        "user": "5fc65a04c7d42e3ce8a66565",
+        "image": "f98f494654a9808b18db49e3286453c5.jpg",
+        "brand": "Sony",
+        "category": "Electronics",
+        "description": "The ultimate home entertainment center starts with PlayStation. Whether you are into gaming, HD movies, television, music",
+        "reviews": []
+    },
+    {
+        "rating": 0,
+        "numReviews": 0,
+        "price": 49.99,
+        "countInStock": 7,
+        "name": "Logitech G-Series Gaming Mouse",
+        "user": "5fc65a04c7d42e3ce8a66565",
+        "image": "dd341bcadf0c178374aa2884d5749713.jpg",
+        "brand": "Logitech",
+        "category": "Electronics",
+        "description": "Get a better handle on your games with this Logitech LIGHTSYNC gaming mouse. The six programmable buttons allow customization for a smooth playing experience",
+        "reviews": []
+    },
+    {
+        "rating": 4,
+        "numReviews": 1,
+        "price": 29.99,
+        "countInStock": 7,
+        "name": "Amazon Echo Dot 3rd Generation",
+        "user": "5fc65a04c7d42e3ce8a66565",
+        "image": "22dafc33d0a531b72df031bd01d0b64d.jpg",
+        "brand": "Amazon",
+        "category": "Electronics",
+        "description": "Meet Echo Dot - Our most popular smart speaker with a fabric design. It is our most compact smart speaker that fits perfectly into small space",
+        "reviews": [
+            {
+                "name": "Varda",
+                "rating": 4,
+                "comment": "Useful product",
+                "user": "6532180fef7ea7530d0a568d",
+                "createdAt": "2023-11-28T06:21:27.234Z",
+                "updatedAt": "2023-11-28T06:21:27.234Z"
+            }
+        ]
+    }
+]

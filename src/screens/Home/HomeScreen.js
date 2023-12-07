@@ -41,7 +41,7 @@ export default function HomeScreen({navigation}) {
     const dispatch = useDispatch();
  
 
-    // const products = data?.products;
+    
 
     useEffect(()=>{
        
@@ -78,11 +78,7 @@ export default function HomeScreen({navigation}) {
             <View padding-s2>
             <Text $textDefault>{item.name}</Text>
             <Text $textDefault>{item.price}</Text>
-            {/* {item.inventory.status === 'Out of Stock' && (
-                <Text text90M $textDangerLight>
-                {item.inventory.status}
-                </Text>
-            )} */}
+           
             </View>
         </Card>
     )

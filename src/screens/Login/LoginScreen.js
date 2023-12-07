@@ -23,8 +23,8 @@ export default function LoginScreen(props) {
   const dispatch = useDispatch();
 
 
-  const [login]  = useLoginMutation();
-  const [register] = useRegisterMutation();
+  const [login,{isLoading:loginLoading,error:loginError}]  = useLoginMutation();
+  const [register,{isLoading:registrationLoading,error:registrationError}] = useRegisterMutation();
 
   
 
@@ -67,7 +67,6 @@ export default function LoginScreen(props) {
 
   }
 
-  
   return (
     <View style={{flex:1,backgroundColor:Assets.Colors(colorScheme).primary}}>
       <IosSafeArea />
@@ -101,7 +100,7 @@ export default function LoginScreen(props) {
           </TouchableOpacity>
          )}
 
-          
+        {(loginError || registrationError ) && <Text style={{color:'red',paddingTop:10,fontSize:18}}>{loginError?.data?.message}</Text>}
         </View>
         <View marginT-50>
           <Button title={loginView ? 'Login' : 'Sign up'} onPress={loginView ? loginUser : signupUser} />
